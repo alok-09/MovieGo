@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Play, Star } from 'lucide-react';
-import { Movie } from '../services/omdbApi';
+import { Movie, getMovieVideos } from '../services/omdbApi';
+import TrailerModal from './TrailerModal';
+import toast from 'react-hot-toast';
 
 interface HeroCarouselProps {
   movies: Movie[];
@@ -8,6 +10,9 @@ interface HeroCarouselProps {
 
 export default function HeroCarousel({ movies }: HeroCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showTrailerModal, setShowTrailerModal] = useState(false);
+  const [trailerKey, setTrailerKey] = useState<string | null>(null);
+  const [loadingTrailer, setLoadingTrailer] = useState(false);
 
   useEffect(() => {
     if (movies.length === 0) return;
@@ -66,9 +71,31 @@ export default function HeroCarousel({ movies }: HeroCarouselProps) {
             {currentMovie.overview}
           </p>
 
-          <button className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center space-x-2">
+          <button
+            onClick={async () => {
+              setLoadingTrailer(true);
+              try {
+                const videos = await getMovieVideos(currentMovie.id);
+                const trailer = videos.results?.find(
+                  (video: any) => video.type === 'Trailer' && video.site === 'YouTube'
+                );
+                if (trailer) {
+                  setTrailerKey(trailer.key);
+                  setShowTrailerModal(true);
+                } else {
+                  toast.error('No trailer available for this movie');
+                }
+              } catch (error) {
+                toast.error('Failed to load trailer');
+              } finally {
+                setLoadingTrailer(false);
+              }
+            }}
+            disabled={loadingTrailer}
+            className="bg-amber-500 hover:bg-amber-600 disabled:bg-amber-400 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center space-x-2"
+          >
             <Play className="w-5 h-5 fill-white" />
-            <span>Watch Trailer</span>
+            <span>{loadingTrailer ? 'Loading...' : 'Watch Trailer'}</span>
           </button>
         </div>
       </div>
@@ -103,6 +130,18 @@ export default function HeroCarousel({ movies }: HeroCarouselProps) {
           />
         ))}
       </div>
+
+      {trailerKey && (
+        <TrailerModal
+          isOpen={showTrailerModal}
+          onClose={() => {
+            setShowTrailerModal(false);
+            setTrailerKey(null);
+          }}
+          trailerKey={trailerKey}
+          movieTitle={currentMovie.title}
+        />
+      )}
     </div>
   );
 }
