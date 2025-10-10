@@ -1,0 +1,49 @@
+
+> cinema-booking-backend@1.0.0 start
+> node src/server.js
+
+Server is running on port 5000
+MongoDB Connected: ac-wucryk0-shard-00-00.xxxeusr.mongodb.net
+Creating booking with data: {
+  cinemaId: '68e8fba094a96a3c1755b242',
+  imdbID: '634649',
+  showtime: '10:00 AM',
+  showDate: '2025-10-15',
+  seats: [ 'A1' ],
+  totalPrice: 200,
+  movieTitle: 'Spider-Man',
+  userId: 'test'
+}
+Creating booking with data: {
+  cinemaId: '68e8fcfaa98fdebabace3daa',
+  imdbID: '278',
+  showtime: '11:00 AM',
+  showDate: '2025-10-10',
+  seats: [ 'A1', 'A2' ],
+  totalPrice: 400,
+  movieTitle: 'The Shawshank Redemption',
+  userId: 'test-user'
+}
+Booking created successfully: new ObjectId('68e8fd13aefa814a3c909dc5')
+Creating booking with data: {
+  cinemaId: '68e8fcfaa98fdebabace3daa',
+  imdbID: '1038392',
+  showtime: '11:00 AM',
+  showDate: '2025-10-10',
+  seats: [ 'B1', 'B2' ],
+  totalPrice: 400,
+  movieTitle: 'Sonic the Hedgehog 3',
+  userId: 'test-user-2'
+}
+Cinema not found: 68e8fcfaa98fdebabace3daa
+Creating booking with data: {
+  cinemaId: '68e8fd71da542582ff347a62',
+  imdbID: '1038392',
+  showtime: '11:00 AM',
+  showDate: '2025-10-10',
+  seats: [ 'B1', 'B2' ],
+  totalPrice: 400,
+  movieTitle: 'Sonic the Hedgehog 3',
+  userId: 'test-user-2'
+}
+Booking created successfully: new ObjectId('68e8fd93aefa814a3c909dcc')
