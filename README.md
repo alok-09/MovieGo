@@ -30,26 +30,12 @@
 
 </div>
 
-## 🎥 Experience BookMyRadiant in Action
+## 🎥 See It In Action
 
 <div align="center">
 
 ### 🏠 Discover Movies & Browse Cinemas
-![Home Page Demo](your-home-page-demo.gif)
-*Explore trending movies and find your nearest cinema*
-
-### 🎯 Interactive Seat Selection
-![Seat Selection Demo](your-seat-selection-demo.gif)
-*Choose your perfect seats with real-time availability*
-
-### 📋 Manage Your Bookings
-![Bookings Management Demo](your-bookings-demo.gif)
-*Track, view, and manage all your cinema bookings effortlessly*
-
-### 👨‍💼 Powerful Admin Dashboard
-![Admin Panel Demo](your-admin-demo.gif)
-*Complete control over cinemas, showtimes, and bookings*
-
+![Home Page Demo](https://raw.githubusercontent.com/deeptimaan-k/BookMyRadiant/main/demos/home-demo.gif)
 </div>
 
 ---
