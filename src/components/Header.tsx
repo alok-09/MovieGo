@@ -26,7 +26,7 @@ export default function Header() {
             </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
-                RadiantCinemas
+                BookMyRadiant
               </h1>
               <p className="text-xs text-gray-400 hidden md:block">
                 Your Ultimate Movie Experience
