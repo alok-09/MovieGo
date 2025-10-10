@@ -242,17 +242,17 @@ function AdminPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-2">
-            <h1 className="text-4xl font-bold text-gray-900">Admin Panel</h1>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-2">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">Admin Panel</h1>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-lg hover:shadow-xl"
+              className="flex items-center gap-2 bg-blue-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-lg hover:shadow-xl text-sm sm:text-base"
             >
-              <Plus size={20} />
+              <Plus size={18} className="sm:w-5 sm:h-5" />
               Add Cinema
             </button>
           </div>
-          <p className="text-gray-600">Manage cinemas and view all active locations</p>
+          <p className="text-sm sm:text-base text-gray-600">Manage cinemas and view all active locations</p>
         </div>
 
         {isFetching ? (
@@ -261,47 +261,47 @@ function AdminPage() {
           </div>
         ) : (
           <>
-            <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Statistics</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl">
+            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mb-8">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Statistics</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 sm:p-6 rounded-xl">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-blue-600 mb-1">Total Cinemas</p>
-                      <p className="text-3xl font-bold text-blue-900">{cinemas.length}</p>
+                      <p className="text-xs sm:text-sm font-medium text-blue-600 mb-1">Total Cinemas</p>
+                      <p className="text-2xl sm:text-3xl font-bold text-blue-900">{cinemas.length}</p>
                     </div>
-                    <div className="bg-blue-600 p-3 rounded-lg">
-                      <MapPin size={24} className="text-white" />
+                    <div className="bg-blue-600 p-2 sm:p-3 rounded-lg">
+                      <MapPin size={20} className="text-white sm:w-6 sm:h-6" />
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl">
+                <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 sm:p-6 rounded-xl">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-green-600 mb-1">Total Seats</p>
-                      <p className="text-3xl font-bold text-green-900">
+                      <p className="text-xs sm:text-sm font-medium text-green-600 mb-1">Total Seats</p>
+                      <p className="text-2xl sm:text-3xl font-bold text-green-900">
                         {cinemas.reduce((sum, cinema) => sum + cinema.totalSeats, 0)}
                       </p>
                     </div>
-                    <div className="bg-green-600 p-3 rounded-lg">
-                      <Users size={24} className="text-white" />
+                    <div className="bg-green-600 p-2 sm:p-3 rounded-lg">
+                      <Users size={20} className="text-white sm:w-6 sm:h-6" />
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-xl">
+                <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 p-4 sm:p-6 rounded-xl">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-yellow-600 mb-1">Avg Rating</p>
-                      <p className="text-3xl font-bold text-yellow-900">
+                      <p className="text-xs sm:text-sm font-medium text-yellow-600 mb-1">Avg Rating</p>
+                      <p className="text-2xl sm:text-3xl font-bold text-yellow-900">
                         {cinemas.length > 0
                           ? (cinemas.reduce((sum, cinema) => sum + cinema.rating, 0) / cinemas.length).toFixed(1)
                           : '0.0'}
                       </p>
                     </div>
-                    <div className="bg-yellow-600 p-3 rounded-lg">
-                      <Star size={24} className="text-white" />
+                    <div className="bg-yellow-600 p-2 sm:p-3 rounded-lg">
+                      <Star size={20} className="text-white sm:w-6 sm:h-6" />
                     </div>
                   </div>
                 </div>
@@ -309,87 +309,138 @@ function AdminPage() {
             </div>
 
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-2xl font-bold text-gray-900">All Cinemas</h2>
+              <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">All Cinemas</h2>
               </div>
 
               {cinemas.length === 0 ? (
                 <div className="text-center py-12">
                   <MapPin size={48} className="mx-auto text-gray-400 mb-4" />
-                  <p className="text-gray-600 text-lg">No cinemas yet. Add your first cinema to get started.</p>
+                  <p className="text-gray-600 text-base sm:text-lg px-4">No cinemas yet. Add your first cinema to get started.</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Cinema Name
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Location
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Distance
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Rating
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Total Seats
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {cinemas.map((cinema) => (
-                        <tr key={cinema._id} className="hover:bg-gray-50 transition-colors">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-900">{cinema.name}</div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="text-sm text-gray-600 flex items-center gap-1">
-                              <MapPin size={16} />
-                              {cinema.location}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-600">{cinema.distance}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center gap-1 text-sm text-gray-900">
-                              <Star size={16} className="text-yellow-500 fill-current" />
-                              {cinema.rating}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{cinema.totalSeats}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => handleEditCinema(cinema)}
-                                className="text-blue-600 hover:text-blue-800 transition-colors p-2 hover:bg-blue-50 rounded-lg"
-                                title="Edit cinema"
-                              >
-                                <Edit size={18} />
-                              </button>
-                              <button
-                                onClick={() => handleDeleteCinema(cinema._id)}
-                                className="text-red-600 hover:text-red-800 transition-colors p-2 hover:bg-red-50 rounded-lg"
-                                title="Delete cinema"
-                              >
-                                <Trash2 size={18} />
-                              </button>
-                            </div>
-                          </td>
+                <>
+                  <div className="hidden lg:block overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Cinema Name
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Location
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Distance
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Rating
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Total Seats
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {cinemas.map((cinema) => (
+                          <tr key={cinema._id} className="hover:bg-gray-50 transition-colors">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-gray-900">{cinema.name}</div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="text-sm text-gray-600 flex items-center gap-1">
+                                <MapPin size={16} />
+                                {cinema.location}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-600">{cinema.distance}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center gap-1 text-sm text-gray-900">
+                                <Star size={16} className="text-yellow-500 fill-current" />
+                                {cinema.rating}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">{cinema.totalSeats}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => handleEditCinema(cinema)}
+                                  className="text-blue-600 hover:text-blue-800 transition-colors p-2 hover:bg-blue-50 rounded-lg"
+                                  title="Edit cinema"
+                                >
+                                  <Edit size={18} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteCinema(cinema._id)}
+                                  className="text-red-600 hover:text-red-800 transition-colors p-2 hover:bg-red-50 rounded-lg"
+                                  title="Delete cinema"
+                                >
+                                  <Trash2 size={18} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="lg:hidden divide-y divide-gray-200">
+                    {cinemas.map((cinema) => (
+                      <div key={cinema._id} className="p-4 hover:bg-gray-50 transition-colors">
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <h3 className="font-bold text-gray-900 mb-1">{cinema.name}</h3>
+                            <div className="flex items-center gap-1 text-sm text-gray-600 mb-1">
+                              <MapPin size={14} />
+                              <span className="text-xs">{cinema.location}</span>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleEditCinema(cinema)}
+                              className="text-blue-600 hover:text-blue-800 transition-colors p-2 hover:bg-blue-50 rounded-lg"
+                              title="Edit cinema"
+                            >
+                              <Edit size={18} />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteCinema(cinema._id)}
+                              className="text-red-600 hover:text-red-800 transition-colors p-2 hover:bg-red-50 rounded-lg"
+                              title="Delete cinema"
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-3 text-xs">
+                          <div>
+                            <span className="text-gray-500 block mb-1">Distance</span>
+                            <span className="font-medium text-gray-900">{cinema.distance}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500 block mb-1">Rating</span>
+                            <div className="flex items-center gap-1">
+                              <Star size={12} className="text-yellow-500 fill-current" />
+                              <span className="font-medium text-gray-900">{cinema.rating}</span>
+                            </div>
+                          </div>
+                          <div>
+                            <span className="text-gray-500 block mb-1">Seats</span>
+                            <span className="font-medium text-gray-900">{cinema.totalSeats}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
 

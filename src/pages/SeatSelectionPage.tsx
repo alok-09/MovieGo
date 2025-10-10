@@ -92,31 +92,31 @@ export default function SeatSelectionPage() {
 
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden mb-8">
           <div className="flex flex-col md:flex-row">
-            <div className="md:w-1/4 bg-gradient-to-br from-gray-900 to-gray-800 p-6">
+            <div className="md:w-1/4 bg-gradient-to-br from-gray-900 to-gray-800 p-4 sm:p-6">
               <img
                 src={posterUrl}
                 alt={movieDetails?.Title}
-                className="w-full rounded-lg shadow-lg mb-4"
+                className="w-full max-w-xs mx-auto md:max-w-none rounded-lg shadow-lg mb-4"
               />
             </div>
 
-            <div className="md:w-3/4 p-8">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <div className="md:w-3/4 p-4 sm:p-6 lg:p-8">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
                 {movieDetails?.Title}
               </h1>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div className="flex items-center space-x-3 text-gray-700">
-                  <MapPin className="w-5 h-5 text-amber-500" />
-                  <span className="font-medium">{currentSelection.cinemaName}</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6">
+                <div className="flex items-center space-x-2 sm:space-x-3 text-gray-700">
+                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 flex-shrink-0" />
+                  <span className="font-medium text-sm sm:text-base truncate">{currentSelection.cinemaName}</span>
                 </div>
-                <div className="flex items-center space-x-3 text-gray-700">
-                  <Clock className="w-5 h-5 text-amber-500" />
-                  <span className="font-medium">{currentSelection.showtime}</span>
+                <div className="flex items-center space-x-2 sm:space-x-3 text-gray-700">
+                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 flex-shrink-0" />
+                  <span className="font-medium text-sm sm:text-base">{currentSelection.showtime}</span>
                 </div>
-                <div className="flex items-center space-x-3 text-gray-700">
-                  <Calendar className="w-5 h-5 text-amber-500" />
-                  <span className="font-medium">
+                <div className="flex items-center space-x-2 sm:space-x-3 text-gray-700 sm:col-span-2">
+                  <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 flex-shrink-0" />
+                  <span className="font-medium text-sm sm:text-base">
                     {currentSelection.showDate && new Date(currentSelection.showDate).toLocaleDateString('en-US', {
                       weekday: 'long',
                       day: 'numeric',
@@ -128,7 +128,7 @@ export default function SeatSelectionPage() {
               </div>
 
               {movieDetails && (
-                <div className="space-y-2 text-gray-600 bg-gray-50 p-4 rounded-lg">
+                <div className="space-y-2 text-gray-600 bg-gray-50 p-3 sm:p-4 rounded-lg text-sm sm:text-base">
                   <p><span className="font-semibold">Genre:</span> {movieDetails.Genre}</p>
                   <p><span className="font-semibold">Runtime:</span> {movieDetails.Runtime}</p>
                   <p><span className="font-semibold">Rating:</span> {movieDetails.imdbRating}/10</p>
@@ -139,25 +139,25 @@ export default function SeatSelectionPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-2xl p-8 mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+        <div className="bg-white rounded-2xl shadow-2xl p-4 sm:p-6 lg:p-8 mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 sm:mb-8 text-center">
             Select Your Seats
           </h2>
           <SeatGrid />
         </div>
 
-        <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl shadow-2xl p-8 sticky bottom-4">
-          <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-            <div className="text-white">
-              <p className="text-sm text-gray-400 mb-1">Selected Seats</p>
-              <p className="text-2xl font-bold">
+        <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl shadow-2xl p-4 sm:p-6 md:p-8 sticky bottom-4">
+          <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 gap-4">
+            <div className="text-white text-center md:text-left w-full md:w-auto">
+              <p className="text-xs sm:text-sm text-gray-400 mb-1">Selected Seats</p>
+              <p className="text-lg sm:text-xl md:text-2xl font-bold break-words">
                 {selectedSeats.length > 0 ? selectedSeats.join(', ') : 'None'}
               </p>
             </div>
 
-            <div className="text-white text-center">
-              <p className="text-sm text-gray-400 mb-1">Total Amount</p>
-              <p className="text-4xl font-bold text-amber-400">₹{totalAmount}</p>
+            <div className="text-white text-center w-full md:w-auto">
+              <p className="text-xs sm:text-sm text-gray-400 mb-1">Total Amount</p>
+              <p className="text-3xl sm:text-4xl font-bold text-amber-400">₹{totalAmount}</p>
               <p className="text-xs text-gray-400 mt-1">
                 ({selectedSeats.length} seat{selectedSeats.length !== 1 ? 's' : ''} × ₹200)
               </p>
@@ -166,7 +166,7 @@ export default function SeatSelectionPage() {
             <button
               onClick={handleBooking}
               disabled={selectedSeats.length === 0 || isBooking}
-              className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-12 py-4 rounded-full font-bold text-lg hover:from-orange-500 hover:to-amber-500 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg flex items-center space-x-2"
+              className="w-full md:w-auto bg-gradient-to-r from-amber-500 to-orange-500 text-white px-8 sm:px-12 py-3 sm:py-4 rounded-full font-bold text-base sm:text-lg hover:from-orange-500 hover:to-amber-500 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg flex items-center justify-center space-x-2"
             >
               {isBooking && <Loader className="w-5 h-5 animate-spin" />}
               <span>{isBooking ? 'Booking...' : 'Book Now'}</span>

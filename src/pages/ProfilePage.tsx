@@ -86,54 +86,54 @@ function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-6 sm:py-8">
       <div className="max-w-4xl mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">My Profile</h1>
-          <p className="text-gray-600">Manage your account information and view your activity</p>
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">My Profile</h1>
+          <p className="text-sm sm:text-base text-gray-600">Manage your account information and view your activity</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
-          <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-8 py-12">
-            <div className="flex items-center gap-6">
-              <div className="bg-white p-4 rounded-full">
-                <User size={48} className="text-amber-600" />
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-6 sm:mb-8">
+          <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
+            <div className="flex items-center gap-4 sm:gap-6">
+              <div className="bg-white p-3 sm:p-4 rounded-full flex-shrink-0">
+                <User size={32} className="sm:w-12 sm:h-12 text-amber-600" />
               </div>
-              <div className="text-white">
-                <h2 className="text-3xl font-bold mb-1">{user.name}</h2>
-                <p className="text-amber-100 flex items-center gap-2">
-                  <Mail size={16} />
-                  {user.email}
+              <div className="text-white min-w-0">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 truncate">{user.name}</h2>
+                <p className="text-sm sm:text-base text-amber-100 flex items-center gap-2">
+                  <Mail size={14} className="sm:w-4 sm:h-4 flex-shrink-0" />
+                  <span className="truncate">{user.email}</span>
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="p-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-6">Account Details</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gray-50 p-6 rounded-xl">
-                <div className="flex items-center gap-3 mb-2">
-                  <User size={20} className="text-gray-600" />
-                  <span className="text-sm font-medium text-gray-500">Full Name</span>
+          <div className="p-4 sm:p-6 lg:p-8">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">Account Details</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              <div className="bg-gray-50 p-4 sm:p-6 rounded-xl">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                  <User size={18} className="sm:w-5 sm:h-5 text-gray-600" />
+                  <span className="text-xs sm:text-sm font-medium text-gray-500">Full Name</span>
                 </div>
-                <p className="text-lg font-semibold text-gray-900">{user.name}</p>
+                <p className="text-base sm:text-lg font-semibold text-gray-900 truncate">{user.name}</p>
               </div>
 
-              <div className="bg-gray-50 p-6 rounded-xl">
-                <div className="flex items-center gap-3 mb-2">
-                  <Mail size={20} className="text-gray-600" />
-                  <span className="text-sm font-medium text-gray-500">Email Address</span>
+              <div className="bg-gray-50 p-4 sm:p-6 rounded-xl">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                  <Mail size={18} className="sm:w-5 sm:h-5 text-gray-600" />
+                  <span className="text-xs sm:text-sm font-medium text-gray-500">Email Address</span>
                 </div>
-                <p className="text-lg font-semibold text-gray-900">{user.email}</p>
+                <p className="text-base sm:text-lg font-semibold text-gray-900 truncate">{user.email}</p>
               </div>
 
-              <div className="bg-gray-50 p-6 rounded-xl">
-                <div className="flex items-center gap-3 mb-2">
-                  <Shield size={20} className="text-gray-600" />
-                  <span className="text-sm font-medium text-gray-500">Account Role</span>
+              <div className="bg-gray-50 p-4 sm:p-6 rounded-xl">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                  <Shield size={18} className="sm:w-5 sm:h-5 text-gray-600" />
+                  <span className="text-xs sm:text-sm font-medium text-gray-500">Account Role</span>
                 </div>
-                <p className="text-lg font-semibold text-gray-900 capitalize">
+                <p className="text-base sm:text-lg font-semibold text-gray-900 capitalize">
                   {user.role}
                   {user.role === 'admin' && (
                     <span className="ml-2 text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full">
@@ -143,12 +143,12 @@ function ProfilePage() {
                 </p>
               </div>
 
-              <div className="bg-gray-50 p-6 rounded-xl">
-                <div className="flex items-center gap-3 mb-2">
-                  <Calendar size={20} className="text-gray-600" />
-                  <span className="text-sm font-medium text-gray-500">Member Since</span>
+              <div className="bg-gray-50 p-4 sm:p-6 rounded-xl">
+                <div className="flex items-center gap-2 sm:gap-3 mb-2">
+                  <Calendar size={18} className="sm:w-5 sm:h-5 text-gray-600" />
+                  <span className="text-xs sm:text-sm font-medium text-gray-500">Member Since</span>
                 </div>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-base sm:text-lg font-semibold text-gray-900">
                   {formatDate(new Date().toISOString())}
                 </p>
               </div>
@@ -161,47 +161,47 @@ function ProfilePage() {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow-lg p-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-6">Booking Statistics</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="bg-blue-600 p-3 rounded-lg">
-                    <Ticket size={24} className="text-white" />
+          <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">Booking Statistics</h3>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 sm:p-6 rounded-xl">
+                <div className="flex items-center justify-between mb-2 sm:mb-3">
+                  <div className="bg-blue-600 p-2 sm:p-3 rounded-lg">
+                    <Ticket size={18} className="sm:w-6 sm:h-6 text-white" />
                   </div>
                 </div>
-                <p className="text-sm font-medium text-blue-600 mb-1">Total Bookings</p>
-                <p className="text-3xl font-bold text-blue-900">{stats.totalBookings}</p>
+                <p className="text-xs sm:text-sm font-medium text-blue-600 mb-1">Total Bookings</p>
+                <p className="text-2xl sm:text-3xl font-bold text-blue-900">{stats.totalBookings}</p>
               </div>
 
-              <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="bg-green-600 p-3 rounded-lg">
-                    <Ticket size={24} className="text-white" />
+              <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 sm:p-6 rounded-xl">
+                <div className="flex items-center justify-between mb-2 sm:mb-3">
+                  <div className="bg-green-600 p-2 sm:p-3 rounded-lg">
+                    <Ticket size={18} className="sm:w-6 sm:h-6 text-white" />
                   </div>
                 </div>
-                <p className="text-sm font-medium text-green-600 mb-1">Active Bookings</p>
-                <p className="text-3xl font-bold text-green-900">{stats.activeBookings}</p>
+                <p className="text-xs sm:text-sm font-medium text-green-600 mb-1">Active Bookings</p>
+                <p className="text-2xl sm:text-3xl font-bold text-green-900">{stats.activeBookings}</p>
               </div>
 
-              <div className="bg-gradient-to-br from-red-50 to-red-100 p-6 rounded-xl">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="bg-red-600 p-3 rounded-lg">
-                    <Ticket size={24} className="text-white" />
+              <div className="bg-gradient-to-br from-red-50 to-red-100 p-4 sm:p-6 rounded-xl">
+                <div className="flex items-center justify-between mb-2 sm:mb-3">
+                  <div className="bg-red-600 p-2 sm:p-3 rounded-lg">
+                    <Ticket size={18} className="sm:w-6 sm:h-6 text-white" />
                   </div>
                 </div>
-                <p className="text-sm font-medium text-red-600 mb-1">Cancelled Bookings</p>
-                <p className="text-3xl font-bold text-red-900">{stats.cancelledBookings}</p>
+                <p className="text-xs sm:text-sm font-medium text-red-600 mb-1">Cancelled Bookings</p>
+                <p className="text-2xl sm:text-3xl font-bold text-red-900">{stats.cancelledBookings}</p>
               </div>
 
-              <div className="bg-gradient-to-br from-amber-50 to-amber-100 p-6 rounded-xl">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="bg-amber-600 p-3 rounded-lg">
-                    <span className="text-white text-2xl font-bold">₹</span>
+              <div className="bg-gradient-to-br from-amber-50 to-amber-100 p-4 sm:p-6 rounded-xl">
+                <div className="flex items-center justify-between mb-2 sm:mb-3">
+                  <div className="bg-amber-600 p-2 sm:p-3 rounded-lg">
+                    <span className="text-white text-lg sm:text-2xl font-bold">₹</span>
                   </div>
                 </div>
-                <p className="text-sm font-medium text-amber-600 mb-1">Total Spent</p>
-                <p className="text-3xl font-bold text-amber-900">₹{stats.totalSpent}</p>
+                <p className="text-xs sm:text-sm font-medium text-amber-600 mb-1">Total Spent</p>
+                <p className="text-2xl sm:text-3xl font-bold text-amber-900">₹{stats.totalSpent}</p>
               </div>
             </div>
 

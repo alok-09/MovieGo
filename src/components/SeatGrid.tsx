@@ -74,49 +74,51 @@ export default function SeatGrid() {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <div className="bg-gray-900 text-white text-center py-4 rounded-t-3xl mb-8 shadow-lg">
-        <p className="text-lg font-semibold">Screen This Way</p>
+      <div className="bg-gray-900 text-white text-center py-3 sm:py-4 rounded-t-3xl mb-6 sm:mb-8 shadow-lg">
+        <p className="text-base sm:text-lg font-semibold">Screen This Way</p>
         <div className="w-3/4 mx-auto h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent mt-2"></div>
       </div>
 
-      <div className="space-y-3 mb-8">
-        {rows.map((row) => (
-          <div key={row} className="flex items-center justify-center space-x-3">
-            <span className="w-8 text-center font-bold text-gray-700">{row}</span>
-            <div className="flex space-x-2">
-              {Array.from({ length: seatsPerRow }, (_, i) => {
-                const seatNumber = i + 1;
-                const seatId = `${row}${seatNumber}`;
-                return (
-                  <button
-                    key={seatId}
-                    onClick={() => handleSeatClick(seatId)}
-                    className={`w-10 h-10 rounded-lg transition-all duration-200 transform hover:scale-110 ${getSeatClass(
-                      seatId
-                    )} flex items-center justify-center text-white text-xs font-semibold shadow-md`}
-                    disabled={bookedSeats.includes(seatId)}
-                  >
-                    {seatNumber}
-                  </button>
-                );
-              })}
+      <div className="overflow-x-auto pb-4">
+        <div className="min-w-max space-y-2 sm:space-y-3 mb-6 sm:mb-8">
+          {rows.map((row) => (
+            <div key={row} className="flex items-center justify-center space-x-2 sm:space-x-3">
+              <span className="w-6 sm:w-8 text-center font-bold text-gray-700 text-sm sm:text-base">{row}</span>
+              <div className="flex space-x-1 sm:space-x-2">
+                {Array.from({ length: seatsPerRow }, (_, i) => {
+                  const seatNumber = i + 1;
+                  const seatId = `${row}${seatNumber}`;
+                  return (
+                    <button
+                      key={seatId}
+                      onClick={() => handleSeatClick(seatId)}
+                      className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg transition-all duration-200 transform hover:scale-110 ${getSeatClass(
+                        seatId
+                      )} flex items-center justify-center text-white text-xs font-semibold shadow-md`}
+                      disabled={bookedSeats.includes(seatId)}
+                    >
+                      {seatNumber}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
-      <div className="flex justify-center items-center space-x-8 bg-gray-100 p-6 rounded-xl">
+      <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 lg:gap-8 bg-gray-100 p-4 sm:p-6 rounded-xl">
         <div className="flex items-center space-x-2">
-          <div className="w-6 h-6 bg-green-500 rounded"></div>
-          <span className="text-sm font-medium text-gray-700">Available</span>
+          <div className="w-5 h-5 sm:w-6 sm:h-6 bg-green-500 rounded"></div>
+          <span className="text-xs sm:text-sm font-medium text-gray-700">Available</span>
         </div>
         <div className="flex items-center space-x-2">
-          <div className="w-6 h-6 bg-red-500 rounded"></div>
-          <span className="text-sm font-medium text-gray-700">Booked</span>
+          <div className="w-5 h-5 sm:w-6 sm:h-6 bg-red-500 rounded"></div>
+          <span className="text-xs sm:text-sm font-medium text-gray-700">Booked</span>
         </div>
         <div className="flex items-center space-x-2">
-          <div className="w-6 h-6 bg-blue-500 rounded"></div>
-          <span className="text-sm font-medium text-gray-700">Selected</span>
+          <div className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-500 rounded"></div>
+          <span className="text-xs sm:text-sm font-medium text-gray-700">Selected</span>
         </div>
       </div>
     </div>
