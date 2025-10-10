@@ -47,8 +47,9 @@ export default function ShowtimeSelectionModal({
   const loadShowtimes = async () => {
     setLoading(true);
     try {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
       const response = await fetch(
-        `http://localhost:5000/api/showtimes/cinema/${cinemaId}/movie/${movieId}`
+        `${API_BASE_URL}/showtimes/cinema/${cinemaId}/movie/${movieId}`
       );
       if (!response.ok) {
         throw new Error('Failed to fetch showtimes');

@@ -32,7 +32,7 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Film className="w-10 h-10 text-red-600" />
-            <h1 className="text-3xl font-bold text-white">CineBook</h1>
+            <h1 className="text-3xl font-bold text-white">RadiantCinemas</h1>
           </div>
           <p className="text-gray-400">Sign in to your account</p>
         </div>

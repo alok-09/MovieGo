@@ -31,7 +31,7 @@ interface ShowtimeSeatDetails {
 const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 const seatsPerRow = 10;
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 export default function SeatLayoutModal({
   isOpen,
