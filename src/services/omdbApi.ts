@@ -100,15 +100,59 @@ export const getPopularMovies = async () => {
 };
 
 export const getNowPlayingMovies = async (page: number = 1): Promise<MovieListItem[]> => {
-  const response = await api.get('/movie/now_playing', {
-    params: {
-      language: 'en-US',
-      page,
-    },
-  });
+  const [hollywood, bollywood, tollywood] = await Promise.all([
+    // 🎬 Hollywood
+    api.get('/movie/now_playing', {
+      params: {
+        language: 'en-US',              
+        region: 'US',                   
+        with_original_language: 'en',  
+        page,
+      },
+    }),
 
-  const movies = response.data.results || [];
-  return movies.map((movie: Movie) => ({
+    // 🎥 Bollywood
+    api.get('/movie/now_playing', {
+      params: {
+        language: 'en-US',             
+        region: 'IN',                  
+        with_original_language: 'hi',   
+        page,
+      },
+    }),
+
+    // 🎭 Tollywood
+    api.get('/movie/now_playing', {
+      params: {
+        language: 'en-US',              
+        region: 'IN',
+        with_original_language: 'te',   
+        page,
+      },
+    }),
+  ]);
+
+  // Merge results
+  const hollywoodMovies = hollywood.data.results || [];
+  const bollywoodMovies = bollywood.data.results || [];
+  const tollywoodMovies = tollywood.data.results || [];
+
+  // Interleave them for mixed variety
+  const mixedMovies: Movie[] = [];
+  const maxLength = Math.max(
+    hollywoodMovies.length,
+    bollywoodMovies.length,
+    tollywoodMovies.length
+  );
+
+  for (let i = 0; i < maxLength; i++) {
+    if (i < hollywoodMovies.length) mixedMovies.push(hollywoodMovies[i]);
+    if (i < bollywoodMovies.length) mixedMovies.push(bollywoodMovies[i]);
+    if (i < tollywoodMovies.length) mixedMovies.push(tollywoodMovies[i]);
+  }
+
+  // Format for frontend
+  return mixedMovies.map((movie: Movie) => ({
     imdbID: movie.id.toString(),
     Title: movie.title,
     Poster: movie.poster_path
@@ -118,6 +162,7 @@ export const getNowPlayingMovies = async (page: number = 1): Promise<MovieListIt
     vote_average: movie.vote_average,
   }));
 };
+
 
 export const getUpcomingMovies = async (page: number = 1) => {
   const response = await api.get('/movie/upcoming', {
