@@ -103,6 +103,59 @@ export const getBookedSeats = async (req, res) => {
   }
 };
 
+export const getShowtimeSeatDetails = async (req, res) => {
+  try {
+    const { showtimeId } = req.params;
+
+    const showtime = await Showtime.findById(showtimeId);
+    if (!showtime) {
+      return res.status(404).json({ message: 'Showtime not found' });
+    }
+
+    const Booking = (await import('../models/Booking.js')).default;
+    const User = (await import('../models/User.js')).default;
+
+    const bookings = await Booking.find({
+      cinemaId: showtime.cinemaId,
+      imdbID: showtime.imdbID,
+      showDate: showtime.date,
+      showtime: showtime.time,
+      status: 'confirmed'
+    }).select('userId seats');
+
+    const seatUserMap = {};
+
+    for (const booking of bookings) {
+      const user = await User.findOne({ _id: booking.userId }).select('name email');
+
+      if (user) {
+        booking.seats.forEach(seat => {
+          seatUserMap[seat] = {
+            userName: user.name,
+            userEmail: user.email
+          };
+        });
+      }
+    }
+
+    res.json({
+      showtime: {
+        _id: showtime._id,
+        cinemaId: showtime.cinemaId,
+        imdbID: showtime.imdbID,
+        date: showtime.date,
+        time: showtime.time,
+        totalSeats: showtime.totalSeats,
+        availableSeats: showtime.availableSeats,
+        bookedSeats: showtime.bookedSeats
+      },
+      seatUserMap
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const seedShowtimes = async (req, res) => {
   try {
     await Showtime.deleteMany({});

@@ -140,3 +140,47 @@ export const cancelBooking = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getBookingsByCinema = async (req, res) => {
+  try {
+    const { cinemaId } = req.params;
+
+    const bookings = await Booking.find({
+      cinemaId,
+      status: 'confirmed'
+    }).sort({ showDate: 1, showtime: 1 });
+
+    const movieBookings = bookings.reduce((acc, booking) => {
+      const key = `${booking.imdbID}-${booking.showDate}-${booking.showtime}`;
+
+      if (!acc[key]) {
+        acc[key] = {
+          imdbID: booking.imdbID,
+          movieTitle: booking.movieTitle,
+          showDate: booking.showDate,
+          showtime: booking.showtime,
+          totalBookings: 0,
+          totalSeats: 0,
+          bookings: []
+        };
+      }
+
+      acc[key].totalBookings += 1;
+      acc[key].totalSeats += booking.seats.length;
+      acc[key].bookings.push({
+        _id: booking._id,
+        userId: booking.userId,
+        seats: booking.seats,
+        totalPrice: booking.totalPrice,
+        bookingDate: booking.bookingDate
+      });
+
+      return acc;
+    }, {});
+
+    const result = Object.values(movieBookings);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
