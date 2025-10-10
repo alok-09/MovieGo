@@ -46,6 +46,12 @@ export default function SeatSelectionPage() {
   };
 
   const handleBooking = async () => {
+    if (!user) {
+      toast.error('Please login to book tickets');
+      navigate('/login');
+      return;
+    }
+
     if (selectedSeats.length === 0) {
       toast.error('Please select at least one seat');
       return;

@@ -121,7 +121,32 @@ export const cinemaApi = {
   },
 };
 
+export interface BackendShowtime {
+  _id: string;
+  cinemaId: string;
+  imdbID: string;
+  date: string;
+  time: string;
+  price: number;
+  totalSeats: number;
+  availableSeats: number;
+  bookedSeats: string[];
+}
+
 export const showtimeApi = {
+  getShowtimesByCinemaAndMovie: async (
+    cinemaId: string,
+    movieId: string
+  ): Promise<BackendShowtime[]> => {
+    try {
+      const response = await api.get(`/showtimes/cinema/${cinemaId}/movie/${movieId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch showtimes:', error);
+      return [];
+    }
+  },
+
   getBookedSeats: async (
     cinemaId: string,
     imdbID: string,

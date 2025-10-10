@@ -75,10 +75,17 @@ export default function Header() {
                   </Link>
                 )}
 
-                <div className="flex items-center space-x-3 px-4 py-2 bg-gray-800 rounded-lg">
-                  <User className="w-5 h-5 text-amber-400" />
-                  <span className="text-gray-300 hidden md:inline">{user?.name}</span>
-                </div>
+                <Link
+                  to="/profile"
+                  className={`flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-300 ${
+                    isActive('/profile')
+                      ? 'bg-amber-500 text-gray-900 font-semibold'
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  <User className={`w-5 h-5 ${isActive('/profile') ? 'text-gray-900' : 'text-amber-400'}`} />
+                  <span className="hidden md:inline">{user?.name}</span>
+                </Link>
 
                 <button
                   onClick={handleLogout}

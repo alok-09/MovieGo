@@ -11,6 +11,7 @@ import MyBookingsPage from './pages/MyBookingsPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import AdminPage from './pages/AdminPage';
+import ProfilePage from './pages/ProfilePage';
 import { useUserStore } from './store/userStore';
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/cinema/:id" element={<CinemaPage />} />
           <Route path="/movie/:id" element={<MovieDetailsPage />} />
           <Route path="/show/:cinemaId/:movieId" element={<SeatSelectionPage />} />

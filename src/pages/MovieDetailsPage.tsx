@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Clock, Star, Loader, Film } from 'lucide-react';
 import { getMovieDetailsWithCredits, MovieDetailsWithCredits } from '../services/omdbApi';
 import { useBookingStore } from '../store/bookingStore';
+import ShowtimeSelectionModal from '../components/ShowtimeSelectionModal';
 import toast from 'react-hot-toast';
 
 export default function MovieDetailsPage() {
@@ -10,6 +11,8 @@ export default function MovieDetailsPage() {
   const navigate = useNavigate();
   const [movie, setMovie] = useState<MovieDetailsWithCredits | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const bookingStore = useBookingStore();
 
   useEffect(() => {
     if (!id) {
@@ -143,12 +146,12 @@ export default function MovieDetailsPage() {
 
               <button
                 onClick={() => {
-                  useBookingStore.getState().setCurrentMovie(
-                    id!,
-                    movie.title,
-                    posterUrl
-                  );
-                  navigate('/');
+                  if (!bookingStore.currentSelection.cinemaId) {
+                    toast.error('Please select a cinema first from the home page');
+                    navigate('/');
+                    return;
+                  }
+                  setShowModal(true);
                 }}
                 className="w-full sm:w-auto flex items-center justify-center space-x-2 bg-amber-500 hover:bg-amber-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
@@ -191,6 +194,18 @@ export default function MovieDetailsPage() {
           ))}
         </div>
       </div>
+
+      {showModal && movie && bookingStore.currentSelection.cinemaId && (
+        <ShowtimeSelectionModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          movieId={id!}
+          movieTitle={movie.title}
+          moviePoster={posterUrl}
+          cinemaId={bookingStore.currentSelection.cinemaId}
+          cinemaName={bookingStore.currentSelection.cinemaName || ''}
+        />
+      )}
     </div>
   );
 }
