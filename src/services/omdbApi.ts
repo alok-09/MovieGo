@@ -51,13 +51,52 @@ export interface MovieDetailsWithCredits extends MovieDetails {
 }
 
 export const getPopularMovies = async () => {
-  const response = await api.get('/movie/popular', {
-    params: {
-      language: 'en-US',
-      page: 1,
-    },
-  });
-  return response.data;
+  const [hollywood, bollywood, tollywood] = await Promise.all([
+    api.get('/discover/movie', {
+      params: {
+        language: 'en-US',
+        region: 'US',
+        sort_by: 'popularity.desc',
+        page: 1,
+        'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      },
+    }),
+    api.get('/discover/movie', {
+      params: {
+        language: 'hi-IN',
+        region: 'IN',
+        with_original_language: 'hi',
+        sort_by: 'popularity.desc',
+        page: 1,
+        'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      },
+    }),
+    api.get('/discover/movie', {
+      params: {
+        language: 'te-IN',
+        region: 'IN',
+        with_original_language: 'te',
+        sort_by: 'popularity.desc',
+        page: 1,
+        'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      },
+    }),
+  ]);
+
+  const hollywoodMovies = hollywood.data.results.slice(0, 7);
+  const bollywoodMovies = bollywood.data.results.slice(0, 7);
+  const tollywoodMovies = tollywood.data.results.slice(0, 6);
+
+  const mixedMovies = [];
+  const maxLength = Math.max(hollywoodMovies.length, bollywoodMovies.length, tollywoodMovies.length);
+
+  for (let i = 0; i < maxLength; i++) {
+    if (i < hollywoodMovies.length) mixedMovies.push(hollywoodMovies[i]);
+    if (i < bollywoodMovies.length) mixedMovies.push(bollywoodMovies[i]);
+    if (i < tollywoodMovies.length) mixedMovies.push(tollywoodMovies[i]);
+  }
+
+  return { results: mixedMovies };
 };
 
 export const getNowPlayingMovies = async (page: number = 1): Promise<MovieListItem[]> => {
