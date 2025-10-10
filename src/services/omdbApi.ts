@@ -104,9 +104,9 @@ export const getNowPlayingMovies = async (page: number = 1): Promise<MovieListIt
     // 🎬 Hollywood
     api.get('/movie/now_playing', {
       params: {
-        language: 'en-US',              
-        region: 'US',                   
-        with_original_language: 'en',  
+        language: 'en-US',
+        region: 'US',
+        with_original_language: 'en',
         page,
       },
     }),
@@ -114,9 +114,9 @@ export const getNowPlayingMovies = async (page: number = 1): Promise<MovieListIt
     // 🎥 Bollywood
     api.get('/movie/now_playing', {
       params: {
-        language: 'en-US',             
-        region: 'IN',                  
-        with_original_language: 'hi',   
+        language: 'en-US',
+        region: 'IN',
+        with_original_language: 'hi',
         page,
       },
     }),
@@ -124,21 +124,37 @@ export const getNowPlayingMovies = async (page: number = 1): Promise<MovieListIt
     // 🎭 Tollywood
     api.get('/movie/now_playing', {
       params: {
-        language: 'en-US',              
+        language: 'en-US',
         region: 'IN',
-        with_original_language: 'te',   
+        with_original_language: 'te',
         page,
       },
     }),
   ]);
 
-  // Merge results
-  const hollywoodMovies = hollywood.data.results || [];
-  const bollywoodMovies = bollywood.data.results || [];
-  const tollywoodMovies = tollywood.data.results || [];
+  // Combine all results
+  const allMovies = [
+    ...hollywood.data.results,
+    ...bollywood.data.results,
+    ...tollywood.data.results,
+  ];
 
-  // Interleave them for mixed variety
+  // 🧹 Remove duplicates by movie ID
+  const uniqueMoviesMap = new Map<number, Movie>();
+  allMovies.forEach((movie: Movie) => {
+    if (!uniqueMoviesMap.has(movie.id)) {
+      uniqueMoviesMap.set(movie.id, movie);
+    }
+  });
+
+  // Convert back to array
+  const uniqueMovies = Array.from(uniqueMoviesMap.values());
+
+  // 🎛 Interleave for variety
   const mixedMovies: Movie[] = [];
+  const hollywoodMovies = hollywood.data.results;
+  const bollywoodMovies = bollywood.data.results;
+  const tollywoodMovies = tollywood.data.results;
   const maxLength = Math.max(
     hollywoodMovies.length,
     bollywoodMovies.length,
@@ -146,13 +162,16 @@ export const getNowPlayingMovies = async (page: number = 1): Promise<MovieListIt
   );
 
   for (let i = 0; i < maxLength; i++) {
-    if (i < hollywoodMovies.length) mixedMovies.push(hollywoodMovies[i]);
-    if (i < bollywoodMovies.length) mixedMovies.push(bollywoodMovies[i]);
-    if (i < tollywoodMovies.length) mixedMovies.push(tollywoodMovies[i]);
+    if (i < hollywoodMovies.length && !mixedMovies.find(m => m.id === hollywoodMovies[i].id))
+      mixedMovies.push(hollywoodMovies[i]);
+    if (i < bollywoodMovies.length && !mixedMovies.find(m => m.id === bollywoodMovies[i].id))
+      mixedMovies.push(bollywoodMovies[i]);
+    if (i < tollywoodMovies.length && !mixedMovies.find(m => m.id === tollywoodMovies[i].id))
+      mixedMovies.push(tollywoodMovies[i]);
   }
 
-  // Format for frontend
-  return mixedMovies.map((movie: Movie) => ({
+  // 🖼 Format for UI
+  return uniqueMovies.map((movie: Movie) => ({
     imdbID: movie.id.toString(),
     Title: movie.title,
     Poster: movie.poster_path
@@ -162,6 +181,7 @@ export const getNowPlayingMovies = async (page: number = 1): Promise<MovieListIt
     vote_average: movie.vote_average,
   }));
 };
+
 
 
 export const getUpcomingMovies = async (page: number = 1) => {
