@@ -4,7 +4,7 @@ import { X } from 'lucide-react';
 interface EditCinemaModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpdate: (id: string, cinema: CinemaFormData) => void;
+  onUpdate: (cinema: CinemaFormData) => void;
   isLoading?: boolean;
   cinema: Cinema | null;
 }
@@ -49,9 +49,7 @@ function EditCinemaModal({ isOpen, onClose, onUpdate, isLoading = false, cinema 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (cinema) {
-      onUpdate(cinema._id, formData);
-    }
+    onUpdate(formData);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
