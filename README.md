@@ -35,7 +35,10 @@
 <div align="center">
 
 ### 🏠 Discover Movies & Browse Cinemas
-![Home Page Demo](https://raw.githubusercontent.com/deeptimaan-k/BookMyRadiant/main/demos/home-demo.gif)
+<img src="https://raw.githubusercontent.com/deeptimaan-k/BookMyRadiant/main/demos/home-demo.gif" 
+     alt="Home Page Demo" 
+     width="800" 
+     height="450" />
 </div>
 
 ---
