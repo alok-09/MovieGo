@@ -124,6 +124,15 @@ export const getMovieById = async (id: number): Promise<MovieDetails> => {
   return response.data;
 };
 
+export const getMovieVideos = async (id: number) => {
+  const response = await api.get(`/movie/${id}/videos`, {
+    params: {
+      language: 'en-US',
+    },
+  });
+  return response.data;
+};
+
 export const getMovieDetailsWithCredits = async (id: number): Promise<MovieDetailsWithCredits> => {
   const [movieDetails, credits] = await Promise.all([
     getMovieById(id),

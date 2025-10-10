@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, Clock, Star, Loader, Film } from 'lucide-react';
-import { getMovieDetailsWithCredits, MovieDetailsWithCredits } from '../services/omdbApi';
+import { ArrowLeft, Calendar, Clock, Star, Loader, Film, Play } from 'lucide-react';
+import { getMovieDetailsWithCredits, getMovieVideos, MovieDetailsWithCredits } from '../services/omdbApi';
 import { useBookingStore } from '../store/bookingStore';
 import ShowtimeSelectionModal from '../components/ShowtimeSelectionModal';
+import TrailerModal from '../components/TrailerModal';
 import toast from 'react-hot-toast';
 
 export default function MovieDetailsPage() {
@@ -12,6 +13,8 @@ export default function MovieDetailsPage() {
   const [movie, setMovie] = useState<MovieDetailsWithCredits | null>(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showTrailerModal, setShowTrailerModal] = useState(false);
+  const [trailerKey, setTrailerKey] = useState<string | null>(null);
   const bookingStore = useBookingStore();
 
   useEffect(() => {
@@ -29,12 +32,28 @@ export default function MovieDetailsPage() {
       const movieId = parseInt(id!);
       const details = await getMovieDetailsWithCredits(movieId);
       setMovie(details);
+
+      const videos = await getMovieVideos(movieId);
+      const trailer = videos.results?.find(
+        (video: any) => video.type === 'Trailer' && video.site === 'YouTube'
+      );
+      if (trailer) {
+        setTrailerKey(trailer.key);
+      }
     } catch (error) {
       console.error('Error loading movie details:', error);
       toast.error('Failed to load movie details');
       navigate(-1);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleWatchTrailer = () => {
+    if (trailerKey) {
+      setShowTrailerModal(true);
+    } else {
+      toast.error('No trailer available for this movie');
     }
   };
 
@@ -144,20 +163,30 @@ export default function MovieDetailsPage() {
                 <p className="text-base sm:text-lg text-gray-200 leading-relaxed">{movie.overview}</p>
               </div>
 
-              <button
-                onClick={() => {
-                  if (!bookingStore.currentSelection.cinemaId) {
-                    toast.error('Please select a cinema first from the home page');
-                    navigate('/');
-                    return;
-                  }
-                  setShowModal(true);
-                }}
-                className="w-full sm:w-auto flex items-center justify-center space-x-2 bg-amber-500 hover:bg-amber-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-              >
-                <Film className="w-5 h-5 sm:w-6 sm:h-6" />
-                <span>View Showtimes</span>
-              </button>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <button
+                  onClick={handleWatchTrailer}
+                  className="w-full sm:w-auto flex items-center justify-center space-x-2 bg-white hover:bg-gray-100 text-gray-900 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                >
+                  <Play className="w-5 h-5 sm:w-6 sm:h-6" />
+                  <span>Watch Trailer</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    if (!bookingStore.currentSelection.cinemaId) {
+                      toast.error('Please select a cinema first from the home page');
+                      navigate('/');
+                      return;
+                    }
+                    setShowModal(true);
+                  }}
+                  className="w-full sm:w-auto flex items-center justify-center space-x-2 bg-amber-500 hover:bg-amber-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                >
+                  <Film className="w-5 h-5 sm:w-6 sm:h-6" />
+                  <span>View Showtimes</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -204,6 +233,15 @@ export default function MovieDetailsPage() {
           moviePoster={posterUrl}
           cinemaId={bookingStore.currentSelection.cinemaId}
           cinemaName={bookingStore.currentSelection.cinemaName || ''}
+        />
+      )}
+
+      {trailerKey && (
+        <TrailerModal
+          isOpen={showTrailerModal}
+          onClose={() => setShowTrailerModal(false)}
+          trailerKey={trailerKey}
+          movieTitle={movie?.title || ''}
         />
       )}
     </div>
