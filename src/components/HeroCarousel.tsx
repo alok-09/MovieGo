@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, Play, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, Play, Star, Info } from 'lucide-react';
 import { Movie, getMovieVideos } from '../services/omdbApi';
 import TrailerModal from './TrailerModal';
 import toast from 'react-hot-toast';
@@ -9,6 +10,7 @@ interface HeroCarouselProps {
 }
 
 export default function HeroCarousel({ movies }: HeroCarouselProps) {
+  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showTrailerModal, setShowTrailerModal] = useState(false);
   const [trailerKey, setTrailerKey] = useState<string | null>(null);
@@ -40,63 +42,80 @@ export default function HeroCarousel({ movies }: HeroCarouselProps) {
     : `https://image.tmdb.org/t/p/original${currentMovie.poster_path}`;
 
   return (
-    <div className="relative w-full h-[50vh] md:h-[70vh] overflow-hidden">
+    <div className="relative w-full h-[60vh] sm:h-[70vh] md:h-[85vh] overflow-hidden">
       <div
-        className="absolute inset-0 bg-cover bg-center transition-all duration-700 ease-in-out"
+        className="absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-in-out"
         style={{
           backgroundImage: `url(${backdropUrl})`,
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
       </div>
 
-      <div className="relative h-full container mx-auto px-4 flex items-center">
-        <div className="max-w-2xl text-white space-y-4">
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight">
+      <div className="relative h-full container mx-auto px-4 sm:px-6 flex items-center">
+        <div className="max-w-3xl text-white space-y-4 sm:space-y-6 animate-fadeIn">
+          <div className="inline-block">
+            <span className="bg-amber-500 text-white px-4 py-1 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wide">
+              Featured
+            </span>
+          </div>
+
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold leading-tight drop-shadow-2xl">
             {currentMovie.title}
           </h1>
 
-          <div className="flex items-center space-x-4 text-sm md:text-base">
-            <div className="flex items-center space-x-1">
-              <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-              <span className="font-semibold">
+          <div className="flex items-center space-x-4 sm:space-x-6 text-sm sm:text-base">
+            <div className="flex items-center space-x-2 bg-amber-500/90 px-3 py-1.5 rounded-full">
+              <Star className="w-4 h-4 sm:w-5 sm:h-5 text-white fill-white" />
+              <span className="font-bold">
                 {currentMovie.vote_average.toFixed(1)}
               </span>
             </div>
-            <span>•</span>
-            <span>{currentMovie.release_date?.split('-')[0]}</span>
+            <span className="text-gray-300">•</span>
+            <span className="font-semibold">{currentMovie.release_date?.split('-')[0]}</span>
           </div>
 
-          <p className="text-sm md:text-lg text-gray-200 line-clamp-3">
+          <p className="text-base sm:text-lg md:text-xl text-gray-200 line-clamp-3 leading-relaxed max-w-2xl">
             {currentMovie.overview}
           </p>
 
-          <button
-            onClick={async () => {
-              setLoadingTrailer(true);
-              try {
-                const videos = await getMovieVideos(currentMovie.id);
-                const trailer = videos.results?.find(
-                  (video: any) => video.type === 'Trailer' && video.site === 'YouTube'
-                );
-                if (trailer) {
-                  setTrailerKey(trailer.key);
-                  setShowTrailerModal(true);
-                } else {
-                  toast.error('No trailer available for this movie');
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
+            <button
+              onClick={async () => {
+                setLoadingTrailer(true);
+                try {
+                  const videos = await getMovieVideos(currentMovie.id);
+                  const trailer = videos.results?.find(
+                    (video: any) => video.type === 'Trailer' && video.site === 'YouTube'
+                  );
+                  if (trailer) {
+                    setTrailerKey(trailer.key);
+                    setShowTrailerModal(true);
+                  } else {
+                    toast.error('No trailer available for this movie');
+                  }
+                } catch (error) {
+                  toast.error('Failed to load trailer');
+                } finally {
+                  setLoadingTrailer(false);
                 }
-              } catch (error) {
-                toast.error('Failed to load trailer');
-              } finally {
-                setLoadingTrailer(false);
-              }
-            }}
-            disabled={loadingTrailer}
-            className="bg-amber-500 hover:bg-amber-600 disabled:bg-amber-400 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center space-x-2"
-          >
-            <Play className="w-5 h-5 fill-white" />
-            <span>{loadingTrailer ? 'Loading...' : 'Watch Trailer'}</span>
-          </button>
+              }}
+              disabled={loadingTrailer}
+              className="bg-amber-500 hover:bg-amber-600 disabled:bg-amber-400 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center space-x-2 shadow-xl hover:shadow-2xl transform hover:scale-105"
+            >
+              <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-white" />
+              <span>{loadingTrailer ? 'Loading...' : 'Watch Trailer'}</span>
+            </button>
+
+            <button
+              onClick={() => navigate(`/movie/${currentMovie.id}`)}
+              className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg transition-all duration-300 flex items-center justify-center space-x-2 border-2 border-white/50 hover:border-white shadow-xl hover:shadow-2xl transform hover:scale-105"
+            >
+              <Info className="w-5 h-5 sm:w-6 sm:h-6" />
+              <span>More Info</span>
+            </button>
+          </div>
         </div>
       </div>
 
