@@ -219,3 +219,37 @@ export const getMovieDetailsWithCredits = async (id: number): Promise<MovieDetai
     cast: credits.cast.slice(0, 20),
   };
 };
+
+export interface MovieReview {
+  id: string;
+  author: string;
+  author_details: {
+    name: string;
+    username: string;
+    avatar_path: string | null;
+    rating: number | null;
+  };
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export const getMovieReviews = async (id: number): Promise<MovieReview[]> => {
+  const response = await api.get(`/movie/${id}/reviews`, {
+    params: {
+      language: 'en-US',
+      page: 1,
+    },
+  });
+  return response.data.results.slice(0, 6);
+};
+
+export const getSimilarMovies = async (id: number): Promise<Movie[]> => {
+  const response = await api.get(`/movie/${id}/similar`, {
+    params: {
+      language: 'en-US',
+      page: 1,
+    },
+  });
+  return response.data.results.slice(0, 12);
+};
