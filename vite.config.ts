@@ -10,7 +10,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://book-my-radiant.vercel.app',
+        target: 'https://book-my-radiant-qq6mlefg7-deeptimaank.vercel.app',
         changeOrigin: true,
         secure: false,
       },
