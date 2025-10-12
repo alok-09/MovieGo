@@ -7,13 +7,4 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
-  server: {
-    proxy: {
-      '/api': {
-        target: 'https://book-my-radiant-qq6mlefg7-deeptimaank.vercel.app',
-        changeOrigin: true,
-        secure: false,
-      },
-    },
-  },
 });
