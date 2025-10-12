@@ -9,6 +9,7 @@
   <img src="https://img.shields.io/badge/TypeScript-5.5.3-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"/>
   <img src="https://img.shields.io/badge/Express-4.18.2-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express"/>
   <img src="https://img.shields.io/badge/MongoDB-8.0-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB"/>
+  <img src="https://img.shields.io/badge/Supabase-2.57.4-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase"/>
 </p>
 
 <p align="center">
@@ -51,8 +52,8 @@
 
 ### 🎭 For Movie Enthusiasts
 
-✨ **Seamless Discovery**  
-Browse an extensive movie catalog powered by themoviedb API with stunning visuals
+✨ **Seamless Discovery**
+Browse an extensive movie catalog powered by OMDb & TMDb APIs with stunning visuals
 
 🪑 **Smart Seat Selection**  
 Interactive seat maps with live availability updates and instant booking confirmation
@@ -133,10 +134,12 @@ graph LR
 | 📘 **TypeScript** | 5.5.3 | Type-safe development experience |
 | ⚡ **Vite** | 5.4.2 | Lightning-fast HMR & builds |
 | 🎨 **TailwindCSS** | 3.4.1 | Utility-first responsive styling |
-| 🗂️ **Zustand** | - | Lightweight state management |
-| 🛣️ **React Router** | - | Seamless client-side navigation |
-| 🌐 **Axios** | - | Promise-based HTTP client |
-| 🎭 **Lucide React** | - | Beautiful, consistent icons |
+| 🗂️ **Zustand** | 5.0.8 | Lightweight state management |
+| 🛣️ **React Router** | 7.9.4 | Seamless client-side navigation |
+| 🌐 **Axios** | 1.12.2 | Promise-based HTTP client |
+| 🎭 **Lucide React** | 0.344.0 | Beautiful, consistent icons |
+| 🔥 **React Hot Toast** | 2.6.0 | Beautiful notifications & toasts |
+| 🟢 **Supabase** | 2.57.4 | Optional cloud database integration |
 
 ### Backend Powerhouse
 
@@ -154,9 +157,11 @@ graph TD
 | 🟢 **Node.js** | 18+ | JavaScript runtime environment |
 | 🚂 **Express.js** | 4.18.2 | Fast, minimalist web framework |
 | 🍃 **MongoDB** | 8.0 | Flexible NoSQL database |
-| 🦸 **Mongoose** | - | Elegant MongoDB object modeling |
-| 🔐 **JWT** | - | Stateless authentication tokens |
-| 🔒 **bcryptjs** | - | Secure password hashing |
+| 🦸 **Mongoose** | 8.0.0 | Elegant MongoDB object modeling |
+| 🔐 **JWT** | 9.0.2 | Stateless authentication tokens |
+| 🔒 **bcryptjs** | 3.0.2 | Secure password hashing |
+| 🌐 **CORS** | 2.8.5 | Cross-origin resource sharing |
+| 🌐 **Axios** | 1.12.2 | HTTP client for API calls |
 
 </div>
 
@@ -171,8 +176,9 @@ Ensure you have these tools ready:
 ```bash
 ✅ Node.js (v18 or higher)
 ✅ npm or yarn
-✅ MongoDB Atlas Account
-✅ themoviedb API Key (optional)
+✅ MongoDB Atlas Account (or local MongoDB)
+✅ OMDb API Key (get from http://www.omdbapi.com/apikey.aspx)
+✅ TMDb API Key (get from https://www.themoviedb.org/settings/api)
 ```
 
 ### 📦 Installation
@@ -196,11 +202,13 @@ cd backend
 # Install dependencies
 npm install
 
-# Create .env file with these variables:
+# Create .env file (use .env.example as template):
 # MONGODB_URI=your_mongodb_connection_string
 # PORT=5000
 # NODE_ENV=development
-# JWT_SECRET=your_secure_jwt_secret
+# JWT_SECRET=your_secure_jwt_secret_here
+# TMDB_API_KEY=your_tmdb_api_key
+# TMDB_ACCESS_TOKEN=your_tmdb_access_token
 
 # Seed sample data
 npm run seed
@@ -220,6 +228,10 @@ cd ..
 # Install dependencies
 npm install
 
+# Create .env file (use .exmaple.env as template):
+# VITE_API_URL=http://localhost:5000
+# VITE_OMDB_API_KEY=your_omdb_api_key
+
 # Start development server
 npm run dev
 ```
@@ -235,33 +247,90 @@ npm run dev
 ```
 BookMyRadiant/
 │
-├── 🎨 frontend/
-│   ├── src/
-│   │   ├── components/      # Reusable UI components
-│   │   ├── pages/           # Route page components
-│   │   ├── services/        # API integration layer
-│   │   ├── store/           # Global state management
-│   │   ├── App.tsx          # Root component
-│   │   └── main.tsx         # Application entry
+├── 🎨 src/                  # Frontend source
+│   ├── components/          # Reusable UI components
+│   │   ├── AddCinemaModal.tsx
+│   │   ├── BookingCard.tsx
+│   │   ├── CancelConfirmModal.tsx
+│   │   ├── CinemaCard.tsx
+│   │   ├── EditCinemaModal.tsx
+│   │   ├── Header.tsx
+│   │   ├── HeroCarousel.tsx
+│   │   ├── MovieCard.tsx
+│   │   ├── MovieCarousel.tsx
+│   │   ├── SeatGrid.tsx
+│   │   ├── SeatLayoutModal.tsx
+│   │   ├── ShowtimeSelectionModal.tsx
+│   │   └── TrailerModal.tsx
 │   │
+│   ├── pages/               # Route page components
+│   │   ├── AdminPage.tsx
+│   │   ├── CinemaPage.tsx
+│   │   ├── ConfirmationPage.tsx
+│   │   ├── HomePage.tsx
+│   │   ├── LoginPage.tsx
+│   │   ├── MovieDetailsPage.tsx
+│   │   ├── MyBookingsPage.tsx
+│   │   ├── ProfilePage.tsx
+│   │   ├── SeatSelectionPage.tsx
+│   │   └── SignupPage.tsx
+│   │
+│   ├── services/            # API integration layer
+│   │   ├── api.ts           # Backend API calls
+│   │   └── omdbApi.ts       # OMDb API integration
+│   │
+│   ├── store/               # Global state management
+│   │   ├── bookingStore.ts  # Booking state
+│   │   └── userStore.ts     # User authentication state
+│   │
+│   ├── data/
+│   │   └── cinemas.ts       # Cinema data
+│   │
+│   ├── App.tsx              # Root component with routing
+│   ├── main.tsx             # Application entry point
+│   └── index.css            # Global styles
+│
+├── 📦 Root Configuration
 │   ├── vite.config.ts       # Vite configuration
 │   ├── tailwind.config.js   # Tailwind settings
-│   └── package.json
+│   ├── tsconfig.json        # TypeScript config
+│   ├── package.json         # Frontend dependencies
+│   ├── .env                 # Environment variables
+│   └── index.html           # HTML entry point
 │
 ├── 🚂 backend/
 │   ├── src/
-│   │   ├── config/          # Database connection
-│   │   ├── controllers/     # Business logic handlers
-│   │   ├── models/          # MongoDB schemas
-│   │   ├── routes/          # API route definitions
-│   │   ├── middleware/      # Auth & validation
-│   │   ├── server.js        # Express server setup
-│   │   └── seed.js          # Database seeder
+│   │   ├── config/
+│   │   │   └── database.js      # MongoDB connection
+│   │   │
+│   │   ├── controllers/         # Business logic handlers
+│   │   │   ├── authController.js
+│   │   │   ├── bookingController.js
+│   │   │   ├── cinemaController.js
+│   │   │   └── showtimeController.js
+│   │   │
+│   │   ├── models/              # MongoDB schemas
+│   │   │   ├── Booking.js
+│   │   │   ├── Cinema.js
+│   │   │   ├── Showtime.js
+│   │   │   └── User.js
+│   │   │
+│   │   ├── routes/              # API route definitions
+│   │   │   ├── authRoutes.js
+│   │   │   ├── bookingRoutes.js
+│   │   │   ├── cinemaRoutes.js
+│   │   │   ├── showtimeRoutes.js
+│   │   │   └── tmdbRoutes.js
+│   │   │
+│   │   ├── server.js            # Express server setup
+│   │   ├── seed.js              # Database seeder
+│   │   └── makeAdmin.js         # Admin privilege script
 │   │
-│   ├── .env                 # Environment variables
-│   └── package.json
+│   ├── .env.example             # Environment template
+│   ├── package.json             # Backend dependencies
+│   └── README.md                # Backend documentation
 │
-└── README.md
+└── README.md                    # This file
 ```
 
 ---
@@ -433,9 +502,10 @@ graph LR
 
 | Issue | Workaround | Status |
 |:------|:-----------|:------:|
-| themoviedb API rate limits | Use caching or upgrade to paid tier | Known |
+| OMDb/TMDb API rate limits | Use caching or upgrade to paid tier | Known |
 | Seat refresh after network issue | Manual page refresh required | In Progress |
 | Admin promotion | Use makeAdmin.js script | By Design |
+| Hot reload issues | Restart dev server if needed | Known |
 
 <p align="center">
   <a href="https://github.com/deeptimaan-k/BookMyRadiant/issues">Report a Bug 🐛</a> •
@@ -462,7 +532,8 @@ Special thanks to these amazing resources:
 
 | Resource | Usage |
 |:--------:|:------|
-| 🎬 [themoviedb API](http://www.themoviedbapi.com/) | Comprehensive movie database |
+| 🎬 [OMDb API](http://www.omdbapi.com/) | Movie database & metadata |
+| 🎬 [TMDb API](https://www.themoviedb.org/) | Movie posters & details |
 | 📸 [Pexels](https://www.pexels.com/) | High-quality stock imagery |
 | 🎨 [Lucide Icons](https://lucide.dev/) | Beautiful icon library |
 | 🎯 [TailwindCSS](https://tailwindcss.com/) | Utility-first CSS framework |
