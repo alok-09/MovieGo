@@ -3,6 +3,20 @@ import axios from 'axios';
 
 const router = express.Router();
 
+// Apply CORS headers for all TMDB routes (safe for proxy)
+router.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*'); // Or specify your frontend domain
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+  next();
+});
+
+// Handle preflight requests
+router.options('/*', (req, res) => {
+  res.sendStatus(200);
+});
+
+// Proxy all TMDB requests
 router.all('/*', async (req, res) => {
   try {
     const tmdbPath = req.params[0];
@@ -13,7 +27,7 @@ router.all('/*', async (req, res) => {
       url: tmdbUrl,
       params: req.query,
       headers: {
-        'Authorization': `Bearer ${process.env.TMDB_BEARER_TOKEN}`,
+        Authorization: `Bearer ${process.env.TMDB_BEARER_TOKEN}`,
         'Content-Type': 'application/json'
       }
     });
