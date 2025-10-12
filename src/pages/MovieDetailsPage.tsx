@@ -4,7 +4,9 @@ import { ArrowLeft, Calendar, Clock, Star, Loader, Film, Play, User } from 'luci
 import { getMovieDetailsWithCredits, getMovieVideos, MovieDetailsWithCredits, getMovieReviews, MovieReview, getSimilarMovies, Movie } from '../services/omdbApi';
 import { useBookingStore } from '../store/bookingStore';
 import ShowtimeSelectionModal from '../components/ShowtimeSelectionModal';
+import CinemaSelectionModal from '../components/CinemaSelectionModal';
 import TrailerModal from '../components/TrailerModal';
+import { Cinema } from '../services/api';
 import toast from 'react-hot-toast';
 
 export default function MovieDetailsPage() {
@@ -14,7 +16,9 @@ export default function MovieDetailsPage() {
   const [reviews, setReviews] = useState<MovieReview[]>([]);
   const [similarMovies, setSimilarMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
+  const [showCinemaModal, setShowCinemaModal] = useState(false);
+  const [showShowtimeModal, setShowShowtimeModal] = useState(false);
+  const [selectedCinema, setSelectedCinema] = useState<Cinema | null>(null);
   const [showTrailerModal, setShowTrailerModal] = useState(false);
   const [trailerKey, setTrailerKey] = useState<string | null>(null);
   const [expandedReviews, setExpandedReviews] = useState<Set<string>>(new Set());
@@ -201,14 +205,7 @@ export default function MovieDetailsPage() {
                 </button>
 
                 <button
-                  onClick={() => {
-                    if (!bookingStore.currentSelection.cinemaId) {
-                      toast.error('Please select a cinema first from the home page');
-                      navigate('/');
-                      return;
-                    }
-                    setShowModal(true);
-                  }}
+                  onClick={() => setShowCinemaModal(true)}
                   className="w-full sm:w-auto flex items-center justify-center space-x-2 bg-amber-500 hover:bg-amber-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
                 >
                   <Film className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -363,15 +360,30 @@ export default function MovieDetailsPage() {
         </div>
       )}
 
-      {showModal && movie && bookingStore.currentSelection.cinemaId && (
+      <CinemaSelectionModal
+        isOpen={showCinemaModal}
+        onClose={() => setShowCinemaModal(false)}
+        onSelectCinema={(cinema) => {
+          setSelectedCinema(cinema);
+          bookingStore.setCurrentCinema(cinema.id, cinema.name);
+          setShowCinemaModal(false);
+          setShowShowtimeModal(true);
+        }}
+        movieTitle={movie?.title || ''}
+      />
+
+      {showShowtimeModal && movie && selectedCinema && (
         <ShowtimeSelectionModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
+          isOpen={showShowtimeModal}
+          onClose={() => {
+            setShowShowtimeModal(false);
+            setSelectedCinema(null);
+          }}
           movieId={id!}
           movieTitle={movie.title}
           moviePoster={posterUrl}
-          cinemaId={bookingStore.currentSelection.cinemaId}
-          cinemaName={bookingStore.currentSelection.cinemaName || ''}
+          cinemaId={selectedCinema.id}
+          cinemaName={selectedCinema.name}
         />
       )}
 
