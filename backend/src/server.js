@@ -6,6 +6,7 @@ import cinemaRoutes from './routes/cinemaRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
 import showtimeRoutes from './routes/showtimeRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import tmdbRoutes from './routes/tmdbRoutes.js';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/cinemas', cinemaRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/showtimes', showtimeRoutes);
+app.use('/api/tmdb', tmdbRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

@@ -1,14 +1,11 @@
 import axios from 'axios';
 
-const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-const TMDB_API_TOKEN =
-  'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiNGM4NTNlZjJlOWEzODMyOGVmYTVhMzNmNDQzMWVhNiIsIm5iZiI6MTY2NjU1Mjg2MC4wMDMsInN1YiI6IjYzNTU5NDFiODgwYzkyMDA3ZTcwYWFhYyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.kKzYLHv_uw5jtP2CNkP4ftr5Miqt0y3BqOj0k435Pg8';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
 const api = axios.create({
-  baseURL: TMDB_BASE_URL,
+  baseURL: `${BACKEND_URL}/api/tmdb`,
   headers: {
     accept: 'application/json',
-    Authorization: `Bearer ${TMDB_API_TOKEN}`,
   },
 });
 
