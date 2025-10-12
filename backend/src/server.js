@@ -20,6 +20,7 @@ app.use(cors({
     'http://localhost:5173',
     'http://localhost:5174',
     'https://bookmyradiant.netlify.app',
+    'https://bookmyradiant.vercel.app/',
     /\.netlify\.app$/,
     /\.vercel\.app$/
   ],
