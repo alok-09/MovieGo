@@ -1,12 +1,13 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 const api = axios.create({
-  baseURL: `${API_BASE_URL.replace('/api', '')}/api/tmdb`,
+  baseURL: `${API_BASE_URL}/tmdb`,
   headers: {
     accept: 'application/json',
   },
+  timeout: 15000,
 });
 
 export interface Movie {
@@ -48,118 +49,133 @@ export interface MovieDetailsWithCredits extends MovieDetails {
 }
 
 export const getPopularMovies = async () => {
-  const [hollywood, bollywood, tollywood] = await Promise.all([
-    api.get('/discover/movie', {
-      params: {
-        language: 'en-US',
-        region: 'US',
-        sort_by: 'popularity.desc',
-        page: 1,
-        'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      },
-    }),
-    api.get('/discover/movie', {
-      params: {
-        language: 'hi-IN',
-        region: 'IN',
-        with_original_language: 'hi',
-        sort_by: 'popularity.desc',
-        page: 1,
-        'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      },
-    }),
-    api.get('/discover/movie', {
-      params: {
-        language: 'te-IN',
-        region: 'IN',
-        with_original_language: 'te',
-        sort_by: 'popularity.desc',
-        page: 1,
-        'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      },
-    }),
-  ]);
+  try {
+    const [hollywood, bollywood, tollywood] = await Promise.allSettled([
+      api.get('/discover/movie', {
+        params: {
+          language: 'en-US',
+          region: 'US',
+          sort_by: 'popularity.desc',
+          page: 1,
+          'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        },
+      }),
+      api.get('/discover/movie', {
+        params: {
+          language: 'hi-IN',
+          region: 'IN',
+          with_original_language: 'hi',
+          sort_by: 'popularity.desc',
+          page: 1,
+          'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        },
+      }),
+      api.get('/discover/movie', {
+        params: {
+          language: 'te-IN',
+          region: 'IN',
+          with_original_language: 'te',
+          sort_by: 'popularity.desc',
+          page: 1,
+          'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        },
+      }),
+    ]);
 
-  const hollywoodMovies = hollywood.data.results.slice(0, 7);
-  const bollywoodMovies = bollywood.data.results.slice(0, 7);
-  const tollywoodMovies = tollywood.data.results.slice(0, 6);
+    const hollywoodMovies = hollywood.status === 'fulfilled' ? hollywood.value.data.results.slice(0, 7) : [];
+    const bollywoodMovies = bollywood.status === 'fulfilled' ? bollywood.value.data.results.slice(0, 7) : [];
+    const tollywoodMovies = tollywood.status === 'fulfilled' ? tollywood.value.data.results.slice(0, 6) : [];
 
-  const mixedMovies = [];
-  const maxLength = Math.max(hollywoodMovies.length, bollywoodMovies.length, tollywoodMovies.length);
+    const mixedMovies = [];
+    const maxLength = Math.max(hollywoodMovies.length, bollywoodMovies.length, tollywoodMovies.length);
 
-  for (let i = 0; i < maxLength; i++) {
-    if (i < hollywoodMovies.length) mixedMovies.push(hollywoodMovies[i]);
-    if (i < bollywoodMovies.length) mixedMovies.push(bollywoodMovies[i]);
-    if (i < tollywoodMovies.length) mixedMovies.push(tollywoodMovies[i]);
+    for (let i = 0; i < maxLength; i++) {
+      if (i < hollywoodMovies.length) mixedMovies.push(hollywoodMovies[i]);
+      if (i < bollywoodMovies.length) mixedMovies.push(bollywoodMovies[i]);
+      if (i < tollywoodMovies.length) mixedMovies.push(tollywoodMovies[i]);
+    }
+
+    return { results: mixedMovies };
+  } catch (error) {
+    console.error('Error fetching popular movies:', error);
+    return { results: [] };
   }
-
-  return { results: mixedMovies };
 };
 
 export const getNowPlayingMovies = async (page: number = 1): Promise<MovieListItem[]> => {
-  const [bollywood, tollywood, hollywood] = await Promise.all([
-    api.get('/movie/now_playing', {
-      params: {
-        language: 'en-US',
-        region: 'IN',
-        with_original_language: 'hi',
-        page,
-      },
-    }),
-    api.get('/movie/now_playing', {
-      params: {
-        language: 'en-US',
-        region: 'IN',
-        with_original_language: 'te',
-        page,
-      },
-    }),
-    api.get('/movie/now_playing', {
-      params: {
-        language: 'en-US',
-        region: 'US',
-        with_original_language: 'en',
-        page,
-      },
-    }),
-  ]);
+  try {
+    const [bollywood, tollywood, hollywood] = await Promise.allSettled([
+      api.get('/movie/now_playing', {
+        params: {
+          language: 'en-US',
+          region: 'IN',
+          with_original_language: 'hi',
+          page,
+        },
+      }),
+      api.get('/movie/now_playing', {
+        params: {
+          language: 'en-US',
+          region: 'IN',
+          with_original_language: 'te',
+          page,
+        },
+      }),
+      api.get('/movie/now_playing', {
+        params: {
+          language: 'en-US',
+          region: 'US',
+          with_original_language: 'en',
+          page,
+        },
+      }),
+    ]);
 
-  const allMovies = [
-    ...bollywood.data.results,
-    ...tollywood.data.results,
-    ...hollywood.data.results,
-  ];
+    const allMovies = [
+      ...(bollywood.status === 'fulfilled' ? bollywood.value.data.results : []),
+      ...(tollywood.status === 'fulfilled' ? tollywood.value.data.results : []),
+      ...(hollywood.status === 'fulfilled' ? hollywood.value.data.results : []),
+    ];
 
-  const uniqueMoviesMap = new Map<number, Movie>();
-  allMovies.forEach((movie: Movie) => {
-    if (!uniqueMoviesMap.has(movie.id)) {
-      uniqueMoviesMap.set(movie.id, movie);
-    }
-  });
+    const uniqueMoviesMap = new Map<number, Movie>();
+    allMovies.forEach((movie: Movie) => {
+      if (!uniqueMoviesMap.has(movie.id)) {
+        uniqueMoviesMap.set(movie.id, movie);
+      }
+    });
 
-  const uniqueMovies = Array.from(uniqueMoviesMap.values());
+    const uniqueMovies = Array.from(uniqueMoviesMap.values());
 
-  return uniqueMovies.map((movie: Movie) => ({
-    imdbID: movie.id.toString(),
-    Title: movie.title,
-    Poster: movie.poster_path
-      ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-      : 'N/A',
-    Year: movie.release_date ? movie.release_date.split('-')[0] : 'N/A',
-    vote_average: movie.vote_average,
-  }));
+    return uniqueMovies.map((movie: Movie) => ({
+      imdbID: movie.id.toString(),
+      Title: movie.title,
+      Poster: movie.poster_path
+        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+        : 'N/A',
+      Year: movie.release_date ? movie.release_date.split('-')[0] : 'N/A',
+      vote_average: movie.vote_average,
+    }));
+  } catch (error) {
+    console.error('Error fetching now playing movies:', error);
+    return [];
+  }
 };
 
 
 
 export const getUpcomingMovies = async (page: number = 1) => {
-  const response = await api.get('/movie/upcoming', {
-    params: {
-      language: 'en-US',
-      page,
-    },
-  });
-  return response.data;
+  try {
+    const response = await api.get('/movie/upcoming', {
+      params: {
+        language: 'en-US',
+        page,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching upcoming movies:', error);
+    return { results: [] };
+  }
 };
 
 export const getMovieCredits = async (id: number) => {
