@@ -416,6 +416,7 @@ Admin users gain access to:
 | 🚂 [Railway](https://railway.app) | ⭐ Easy | ⚡ Fast | 💰 Free Tier |
 | 🎨 [Render](https://render.com) | ⭐⭐ Medium | ⚡ Fast | 💰 Free Tier |
 | 🟣 [Heroku](https://heroku.com) | ⭐⭐⭐ Advanced | ⚡ Medium | 💰💰 Paid |
+| ▲ [Vercel](https://vercel.com) | ⭐ Easy | ⚡⚡ Ultra Fast | 💰 Free Tier |
 
 ### Frontend Deployment Options
 
@@ -426,6 +427,29 @@ Admin users gain access to:
 | 📄 [GitHub Pages](https://pages.github.com) | ⭐⭐ Medium | ⚡ Fast | 💰 Free |
 
 </div>
+
+### Vercel Deployment (Current Setup)
+
+**Backend**: https://book-my-radiant.vercel.app
+**Frontend**: https://bookmyradiant.vercel.app
+
+#### Environment Variables for Production
+
+On Vercel, configure these environment variables:
+
+**Frontend (.env on Vercel)**:
+```bash
+VITE_API_BASE_URL=https://book-my-radiant.vercel.app/api
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_key
+```
+
+**Backend (.env on Vercel)**:
+```bash
+MONGODB_URI=your_mongodb_atlas_uri
+TMDB_BEARER_TOKEN=your_tmdb_bearer_token
+NODE_ENV=production
+```
 
 ### Quick Deploy Commands
 
@@ -439,6 +463,12 @@ vercel --prod
 # Deploy to Netlify
 netlify deploy --prod
 ```
+
+### Important Notes for Production
+
+1. **API Timeouts**: The API services are configured with 30-second timeouts to handle cold starts on serverless platforms
+2. **Retry Logic**: All movie API calls automatically retry up to 3 times with exponential backoff
+3. **CORS**: Backend is configured to accept requests from both local and production frontend URLs
 
 ---
 

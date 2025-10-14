@@ -106,9 +106,9 @@ This backend needs to be deployed separately on platforms like:
 
 ## Connect Frontend
 
-Update the frontend to use the backend API URL:
+The frontend is already configured to use the backend API URL through Vite proxy configuration:
 
-```typescript
-const API_URL = 'http://localhost:5000/api'; // Development
-// const API_URL = 'https://your-deployed-backend.com/api'; // Production
-```
+- **Development**: API calls to `/api` are proxied to `http://localhost:5000`
+- **Production**: Update `VITE_API_BASE_URL` environment variable
+
+Make sure the backend server is running before starting the frontend development server.

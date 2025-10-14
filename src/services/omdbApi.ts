@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
@@ -7,8 +7,39 @@ const api = axios.create({
   headers: {
     accept: 'application/json',
   },
-  timeout: 15000,
+  timeout: 30000,
 });
+
+const retryRequest = async <T>(
+  request: () => Promise<T>,
+  retries: number = 3,
+  delay: number = 2000
+): Promise<T> => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await request();
+    } catch (error) {
+      const isLastRetry = i === retries - 1;
+
+      if (axios.isAxiosError(error)) {
+        const shouldRetry =
+          !error.response ||
+          error.response.status >= 500 ||
+          error.code === 'ECONNABORTED' ||
+          error.code === 'ETIMEDOUT';
+
+        if (!shouldRetry || isLastRetry) {
+          throw error;
+        }
+      } else if (isLastRetry) {
+        throw error;
+      }
+
+      await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
+    }
+  }
+  throw new Error('Max retries exceeded');
+};
 
 export interface Movie {
   id: number;
@@ -51,35 +82,41 @@ export interface MovieDetailsWithCredits extends MovieDetails {
 export const getPopularMovies = async () => {
   try {
     const [hollywood, bollywood, tollywood] = await Promise.allSettled([
-      api.get('/discover/movie', {
-        params: {
-          language: 'en-US',
-          region: 'US',
-          sort_by: 'popularity.desc',
-          page: 1,
-          'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        },
-      }),
-      api.get('/discover/movie', {
-        params: {
-          language: 'hi-IN',
-          region: 'IN',
-          with_original_language: 'hi',
-          sort_by: 'popularity.desc',
-          page: 1,
-          'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        },
-      }),
-      api.get('/discover/movie', {
-        params: {
-          language: 'te-IN',
-          region: 'IN',
-          with_original_language: 'te',
-          sort_by: 'popularity.desc',
-          page: 1,
-          'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        },
-      }),
+      retryRequest(() =>
+        api.get('/discover/movie', {
+          params: {
+            language: 'en-US',
+            region: 'US',
+            sort_by: 'popularity.desc',
+            page: 1,
+            'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          },
+        })
+      ),
+      retryRequest(() =>
+        api.get('/discover/movie', {
+          params: {
+            language: 'hi-IN',
+            region: 'IN',
+            with_original_language: 'hi',
+            sort_by: 'popularity.desc',
+            page: 1,
+            'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          },
+        })
+      ),
+      retryRequest(() =>
+        api.get('/discover/movie', {
+          params: {
+            language: 'te-IN',
+            region: 'IN',
+            with_original_language: 'te',
+            sort_by: 'popularity.desc',
+            page: 1,
+            'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          },
+        })
+      ),
     ]);
 
     const hollywoodMovies = hollywood.status === 'fulfilled' ? hollywood.value.data.results.slice(0, 7) : [];
@@ -105,30 +142,36 @@ export const getPopularMovies = async () => {
 export const getNowPlayingMovies = async (page: number = 1): Promise<MovieListItem[]> => {
   try {
     const [bollywood, tollywood, hollywood] = await Promise.allSettled([
-      api.get('/movie/now_playing', {
-        params: {
-          language: 'en-US',
-          region: 'IN',
-          with_original_language: 'hi',
-          page,
-        },
-      }),
-      api.get('/movie/now_playing', {
-        params: {
-          language: 'en-US',
-          region: 'IN',
-          with_original_language: 'te',
-          page,
-        },
-      }),
-      api.get('/movie/now_playing', {
-        params: {
-          language: 'en-US',
-          region: 'US',
-          with_original_language: 'en',
-          page,
-        },
-      }),
+      retryRequest(() =>
+        api.get('/movie/now_playing', {
+          params: {
+            language: 'en-US',
+            region: 'IN',
+            with_original_language: 'hi',
+            page,
+          },
+        })
+      ),
+      retryRequest(() =>
+        api.get('/movie/now_playing', {
+          params: {
+            language: 'en-US',
+            region: 'IN',
+            with_original_language: 'te',
+            page,
+          },
+        })
+      ),
+      retryRequest(() =>
+        api.get('/movie/now_playing', {
+          params: {
+            language: 'en-US',
+            region: 'US',
+            with_original_language: 'en',
+            page,
+          },
+        })
+      ),
     ]);
 
     const allMovies = [
@@ -165,12 +208,14 @@ export const getNowPlayingMovies = async (page: number = 1): Promise<MovieListIt
 
 export const getUpcomingMovies = async (page: number = 1) => {
   try {
-    const response = await api.get('/movie/upcoming', {
-      params: {
-        language: 'en-US',
-        page,
-      },
-    });
+    const response = await retryRequest(() =>
+      api.get('/movie/upcoming', {
+        params: {
+          language: 'en-US',
+          page,
+        },
+      })
+    );
     return response.data;
   } catch (error) {
     console.error('Error fetching upcoming movies:', error);
