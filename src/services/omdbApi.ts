@@ -7,13 +7,13 @@ const api = axios.create({
   headers: {
     accept: 'application/json',
   },
-  timeout: 15000, // Reduced from 30000
+  timeout: 30000,
 });
 
 const retryRequest = async <T>(
   request: () => Promise<T>,
-  retries: number = 2, // Reduced from 3
-  delay: number = 1000 // Reduced from 2000
+  retries: number = 3,
+  delay: number = 2000
 ): Promise<T> => {
   for (let i = 0; i < retries; i++) {
     try {
@@ -79,43 +79,8 @@ export interface MovieDetailsWithCredits extends MovieDetails {
   cast: CastMember[];
 }
 
-// Helper function to ensure equal distribution
-const distributeMoviesEqually = (
-  hollywood: Movie[],
-  bollywood: Movie[],
-  tollywood: Movie[],
-  countPerIndustry: number = 7
-): Movie[] => {
-  const mixedMovies: Movie[] = [];
-  
-  // Take exact count from each industry
-  const hollywoodSlice = hollywood.slice(0, countPerIndustry);
-  const bollywoodSlice = bollywood.slice(0, countPerIndustry);
-  const tollywoodSlice = tollywood.slice(0, countPerIndustry);
-  
-  // Interleave movies for better distribution
-  const maxLength = Math.max(
-    hollywoodSlice.length,
-    bollywoodSlice.length,
-    tollywoodSlice.length
-  );
-  
-  for (let i = 0; i < maxLength; i++) {
-    if (i < hollywoodSlice.length) mixedMovies.push(hollywoodSlice[i]);
-    if (i < bollywoodSlice.length) mixedMovies.push(bollywoodSlice[i]);
-    if (i < tollywoodSlice.length) mixedMovies.push(tollywoodSlice[i]);
-  }
-  
-  return mixedMovies;
-};
-
 export const getPopularMovies = async () => {
   try {
-    const dateLimit = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split('T')[0];
-
-    // Fetch all in parallel with Promise.allSettled for better error handling
     const [hollywood, bollywood, tollywood] = await Promise.allSettled([
       retryRequest(() =>
         api.get('/discover/movie', {
@@ -124,7 +89,7 @@ export const getPopularMovies = async () => {
             region: 'US',
             sort_by: 'popularity.desc',
             page: 1,
-            'primary_release_date.gte': dateLimit,
+            'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           },
         })
       ),
@@ -136,35 +101,36 @@ export const getPopularMovies = async () => {
             with_original_language: 'hi',
             sort_by: 'popularity.desc',
             page: 1,
-            'primary_release_date.gte': dateLimit,
+            'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           },
         })
       ),
       retryRequest(() =>
         api.get('/discover/movie', {
           params: {
-            language: 'en-US',
+            language: 'te-IN',
             region: 'IN',
             with_original_language: 'te',
             sort_by: 'popularity.desc',
             page: 1,
-            'primary_release_date.gte': dateLimit,
+            'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           },
         })
       ),
     ]);
 
-    const hollywoodMovies = hollywood.status === 'fulfilled' ? hollywood.value.data.results : [];
-    const bollywoodMovies = bollywood.status === 'fulfilled' ? bollywood.value.data.results : [];
-    const tollywoodMovies = tollywood.status === 'fulfilled' ? tollywood.value.data.results : [];
+    const hollywoodMovies = hollywood.status === 'fulfilled' ? hollywood.value.data.results.slice(0, 7) : [];
+    const bollywoodMovies = bollywood.status === 'fulfilled' ? bollywood.value.data.results.slice(0, 7) : [];
+    const tollywoodMovies = tollywood.status === 'fulfilled' ? tollywood.value.data.results.slice(0, 6) : [];
 
-    // Ensure equal ratio: 7 from each industry
-    const mixedMovies = distributeMoviesEqually(
-      hollywoodMovies,
-      bollywoodMovies,
-      tollywoodMovies,
-      7
-    );
+    const mixedMovies = [];
+    const maxLength = Math.max(hollywoodMovies.length, bollywoodMovies.length, tollywoodMovies.length);
+
+    for (let i = 0; i < maxLength; i++) {
+      if (i < hollywoodMovies.length) mixedMovies.push(hollywoodMovies[i]);
+      if (i < bollywoodMovies.length) mixedMovies.push(bollywoodMovies[i]);
+      if (i < tollywoodMovies.length) mixedMovies.push(tollywoodMovies[i]);
+    }
 
     return { results: mixedMovies };
   } catch (error) {
@@ -175,7 +141,6 @@ export const getPopularMovies = async () => {
 
 export const getNowPlayingMovies = async (page: number = 1): Promise<MovieListItem[]> => {
   try {
-    // Fetch all in parallel
     const [bollywood, tollywood, hollywood] = await Promise.allSettled([
       retryRequest(() =>
         api.get('/movie/now_playing', {
@@ -209,21 +174,14 @@ export const getNowPlayingMovies = async (page: number = 1): Promise<MovieListIt
       ),
     ]);
 
-    const bollywoodMovies = bollywood.status === 'fulfilled' ? bollywood.value.data.results : [];
-    const tollywoodMovies = tollywood.status === 'fulfilled' ? tollywood.value.data.results : [];
-    const hollywoodMovies = hollywood.status === 'fulfilled' ? hollywood.value.data.results : [];
+    const allMovies = [
+      ...(bollywood.status === 'fulfilled' ? bollywood.value.data.results : []),
+      ...(tollywood.status === 'fulfilled' ? tollywood.value.data.results : []),
+      ...(hollywood.status === 'fulfilled' ? hollywood.value.data.results : []),
+    ];
 
-    // Ensure equal distribution: 7 from each
-    const mixedMovies = distributeMoviesEqually(
-      hollywoodMovies,
-      bollywoodMovies,
-      tollywoodMovies,
-      7
-    );
-
-    // Remove duplicates based on movie ID
     const uniqueMoviesMap = new Map<number, Movie>();
-    mixedMovies.forEach((movie: Movie) => {
+    allMovies.forEach((movie: Movie) => {
       if (!uniqueMoviesMap.has(movie.id)) {
         uniqueMoviesMap.set(movie.id, movie);
       }
@@ -245,6 +203,8 @@ export const getNowPlayingMovies = async (page: number = 1): Promise<MovieListIt
     return [];
   }
 };
+
+
 
 export const getUpcomingMovies = async (page: number = 1) => {
   try {
