@@ -4,10 +4,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 const api = axios.create({
   baseURL: `${API_BASE_URL}/tmdb`,
-  headers: {
-    accept: 'application/json',
-  },
-  timeout: 30000,
+  headers: { accept: 'application/json' },
+  timeout: 60000, 
 });
 
 const retryRequest = async <T>(
@@ -28,12 +26,8 @@ const retryRequest = async <T>(
           error.code === 'ECONNABORTED' ||
           error.code === 'ETIMEDOUT';
 
-        if (!shouldRetry || isLastRetry) {
-          throw error;
-        }
-      } else if (isLastRetry) {
-        throw error;
-      }
+        if (!shouldRetry || isLastRetry) throw error;
+      } else if (isLastRetry) throw error;
 
       await new Promise(resolve => setTimeout(resolve, delay * (i + 1)));
     }
@@ -41,6 +35,9 @@ const retryRequest = async <T>(
   throw new Error('Max retries exceeded');
 };
 
+// ======================
+// 🎬 Movie Interfaces
+// ======================
 export interface Movie {
   id: number;
   title: string;
@@ -79,6 +76,9 @@ export interface MovieDetailsWithCredits extends MovieDetails {
   cast: CastMember[];
 }
 
+// ======================
+// 🌎 Get Popular Movies (Bollywood priority)
+// ======================
 export const getPopularMovies = async () => {
   try {
     const [hollywood, bollywood, tollywood] = await Promise.allSettled([
@@ -89,7 +89,9 @@ export const getPopularMovies = async () => {
             region: 'US',
             sort_by: 'popularity.desc',
             page: 1,
-            'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split('T')[0],
           },
         })
       ),
@@ -101,35 +103,54 @@ export const getPopularMovies = async () => {
             with_original_language: 'hi',
             sort_by: 'popularity.desc',
             page: 1,
-            'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split('T')[0],
           },
         })
       ),
       retryRequest(() =>
         api.get('/discover/movie', {
           params: {
-            language: 'te-IN',
+            language: 'en-US',
             region: 'IN',
             with_original_language: 'te',
             sort_by: 'popularity.desc',
             page: 1,
-            'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            'primary_release_date.gte': new Date(Date.now() - 180 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split('T')[0],
           },
         })
       ),
     ]);
 
-    const hollywoodMovies = hollywood.status === 'fulfilled' ? hollywood.value.data.results.slice(0, 7) : [];
-    const bollywoodMovies = bollywood.status === 'fulfilled' ? bollywood.value.data.results.slice(0, 7) : [];
-    const tollywoodMovies = tollywood.status === 'fulfilled' ? tollywood.value.data.results.slice(0, 6) : [];
+    // 🎯 Bollywood priority (50%) > Hollywood (30%) > Tollywood (20%)
+    const hollywoodMovies =
+      hollywood.status === 'fulfilled' ? hollywood.value.data.results.slice(0, 6) : [];
+    const bollywoodMovies =
+      bollywood.status === 'fulfilled' ? bollywood.value.data.results.slice(0, 10) : [];
+    const tollywoodMovies =
+      tollywood.status === 'fulfilled' ? tollywood.value.data.results.slice(0, 4) : [];
 
     const mixedMovies = [];
-    const maxLength = Math.max(hollywoodMovies.length, bollywoodMovies.length, tollywoodMovies.length);
+    const maxLength = Math.max(
+      bollywoodMovies.length,
+      hollywoodMovies.length,
+      tollywoodMovies.length
+    );
 
     for (let i = 0; i < maxLength; i++) {
-      if (i < hollywoodMovies.length) mixedMovies.push(hollywoodMovies[i]);
       if (i < bollywoodMovies.length) mixedMovies.push(bollywoodMovies[i]);
-      if (i < tollywoodMovies.length) mixedMovies.push(tollywoodMovies[i]);
+      if (i < hollywoodMovies.length && i % 2 === 0) mixedMovies.push(hollywoodMovies[i]);
+      if (i < tollywoodMovies.length && i % 3 === 0) mixedMovies.push(tollywoodMovies[i]);
+    }
+
+    // 🩵 Retry once if empty (handles Vercel cold starts or network lag)
+    if (mixedMovies.length === 0) {
+      console.warn('Empty movie list on first load — retrying...');
+      await new Promise(res => setTimeout(res, 2000));
+      return await getPopularMovies();
     }
 
     return { results: mixedMovies };
@@ -139,13 +160,16 @@ export const getPopularMovies = async () => {
   }
 };
 
+// ======================
+// 🎞 Now Playing Movies (Bollywood priority)
+// ======================
 export const getNowPlayingMovies = async (page: number = 1): Promise<MovieListItem[]> => {
   try {
     const [bollywood, tollywood, hollywood] = await Promise.allSettled([
       retryRequest(() =>
         api.get('/movie/now_playing', {
           params: {
-            language: 'en-US',
+            language: 'hi-IN',
             region: 'IN',
             with_original_language: 'hi',
             page,
@@ -155,7 +179,7 @@ export const getNowPlayingMovies = async (page: number = 1): Promise<MovieListIt
       retryRequest(() =>
         api.get('/movie/now_playing', {
           params: {
-            language: 'en-US',
+            language: 'te-IN',
             region: 'IN',
             with_original_language: 'te',
             page,
@@ -175,19 +199,24 @@ export const getNowPlayingMovies = async (page: number = 1): Promise<MovieListIt
     ]);
 
     const allMovies = [
-      ...(bollywood.status === 'fulfilled' ? bollywood.value.data.results : []),
-      ...(tollywood.status === 'fulfilled' ? tollywood.value.data.results : []),
-      ...(hollywood.status === 'fulfilled' ? hollywood.value.data.results : []),
+      ...(bollywood.status === 'fulfilled' ? bollywood.value.data.results.slice(0, 10) : []),
+      ...(hollywood.status === 'fulfilled' ? hollywood.value.data.results.slice(0, 6) : []),
+      ...(tollywood.status === 'fulfilled' ? tollywood.value.data.results.slice(0, 4) : []),
     ];
 
     const uniqueMoviesMap = new Map<number, Movie>();
     allMovies.forEach((movie: Movie) => {
-      if (!uniqueMoviesMap.has(movie.id)) {
-        uniqueMoviesMap.set(movie.id, movie);
-      }
+      if (!uniqueMoviesMap.has(movie.id)) uniqueMoviesMap.set(movie.id, movie);
     });
 
     const uniqueMovies = Array.from(uniqueMoviesMap.values());
+
+    // 🩵 Retry if empty
+    if (uniqueMovies.length === 0) {
+      console.warn('Empty now-playing list — retrying...');
+      await new Promise(res => setTimeout(res, 2000));
+      return await getNowPlayingMovies(page);
+    }
 
     return uniqueMovies.map((movie: Movie) => ({
       imdbID: movie.id.toString(),
@@ -204,16 +233,14 @@ export const getNowPlayingMovies = async (page: number = 1): Promise<MovieListIt
   }
 };
 
-
-
+// ======================
+// 🚀 Upcoming Movies
+// ======================
 export const getUpcomingMovies = async (page: number = 1) => {
   try {
     const response = await retryRequest(() =>
       api.get('/movie/upcoming', {
-        params: {
-          language: 'en-US',
-          page,
-        },
+        params: { language: 'en-US', page },
       })
     );
     return response.data;
@@ -223,6 +250,9 @@ export const getUpcomingMovies = async (page: number = 1) => {
   }
 };
 
+// ======================
+// 🎭 Movie Details, Credits, etc.
+// ======================
 export const getMovieCredits = async (id: number) => {
   const response = await api.get(`/movie/${id}/credits`);
   return response.data;
@@ -230,10 +260,7 @@ export const getMovieCredits = async (id: number) => {
 
 export const searchMovies = async (query: string): Promise<MovieListItem[]> => {
   const response = await api.get('/search/movie', {
-    params: {
-      query,
-      language: 'en-US',
-    },
+    params: { query, language: 'en-US' },
   });
 
   const movies = response.data.results || [];
@@ -249,33 +276,18 @@ export const searchMovies = async (query: string): Promise<MovieListItem[]> => {
 };
 
 export const getMovieById = async (id: number): Promise<MovieDetails> => {
-  const response = await api.get(`/movie/${id}`, {
-    params: {
-      language: 'en-US',
-    },
-  });
+  const response = await api.get(`/movie/${id}`, { params: { language: 'en-US' } });
   return response.data;
 };
 
 export const getMovieVideos = async (id: number) => {
-  const response = await api.get(`/movie/${id}/videos`, {
-    params: {
-      language: 'en-US',
-    },
-  });
+  const response = await api.get(`/movie/${id}/videos`, { params: { language: 'en-US' } });
   return response.data;
 };
 
 export const getMovieDetailsWithCredits = async (id: number): Promise<MovieDetailsWithCredits> => {
-  const [movieDetails, credits] = await Promise.all([
-    getMovieById(id),
-    getMovieCredits(id),
-  ]);
-
-  return {
-    ...movieDetails,
-    cast: credits.cast.slice(0, 20),
-  };
+  const [movieDetails, credits] = await Promise.all([getMovieById(id), getMovieCredits(id)]);
+  return { ...movieDetails, cast: credits.cast.slice(0, 20) };
 };
 
 export interface MovieReview {
@@ -294,20 +306,14 @@ export interface MovieReview {
 
 export const getMovieReviews = async (id: number): Promise<MovieReview[]> => {
   const response = await api.get(`/movie/${id}/reviews`, {
-    params: {
-      language: 'en-US',
-      page: 1,
-    },
+    params: { language: 'en-US', page: 1 },
   });
   return response.data.results.slice(0, 6);
 };
 
 export const getSimilarMovies = async (id: number): Promise<Movie[]> => {
   const response = await api.get(`/movie/${id}/similar`, {
-    params: {
-      language: 'en-US',
-      page: 1,
-    },
+    params: { language: 'en-US', page: 1 },
   });
   return response.data.results.slice(0, 12);
 };
