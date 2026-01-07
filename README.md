@@ -36,7 +36,7 @@
 <div align="center">
 
 ### 🏠 Discover Movies & Browse Cinemas
-<img src="https://raw.githubusercontent.com/deeptimaan-k/BookMyRadiant/main/demos/home-demo.gif" 
+<img src="https://raw.githubusercontent.com/deeptimaan-k/MovieGo/main/demos/home-demo.gif" 
      alt="Home Page Demo" 
      width="800" 
      height="450" />
@@ -44,7 +44,7 @@
 
 ---
 
-## 🌟 Why BookMyRadiant?
+## 🌟 Why MovieGo?
 
 <table>
 <tr>
@@ -189,8 +189,8 @@ Ensure you have these tools ready:
 #### **Step 1: Clone the Repository**
 
 ```bash
-git clone https://github.com/deeptimaan-k/BookMyRadiant.git
-cd BookMyRadiant
+git clone https://github.com/deeptimaan-k/MovieGo.git
+cd MovieGo
 ```
 
 #### **Step 2: Backend Setup**
@@ -245,7 +245,7 @@ npm run dev
 ## 📁 Project Architecture
 
 ```
-BookMyRadiant/
+MovieGo/
 │
 ├── 🎨 src/                  # Frontend source
 │   ├── components/          # Reusable UI components
@@ -431,7 +431,7 @@ Admin users gain access to:
 ### Vercel Deployment (Current Setup)
 
 **Backend**: https://book-my-radiant.vercel.app
-**Frontend**: https://bookmyradiant.vercel.app
+**Frontend**: https://MovieGo.vercel.app
 
 #### Environment Variables for Production
 
@@ -474,7 +474,7 @@ netlify deploy --prod
 
 ## 🤝 Contributing
 
-We love contributions! Here's how you can help make BookMyRadiant even better:
+We love contributions! Here's how you can help make MovieGo even better:
 
 <div align="center">
 
@@ -538,8 +538,8 @@ graph LR
 | Hot reload issues | Restart dev server if needed | Known |
 
 <p align="center">
-  <a href="https://github.com/deeptimaan-k/BookMyRadiant/issues">Report a Bug 🐛</a> •
-  <a href="https://github.com/deeptimaan-k/BookMyRadiant/issues">Request Feature ✨</a>
+  <a href="https://github.com/deeptimaan-k/MovieGo/issues">Report a Bug 🐛</a> •
+  <a href="https://github.com/deeptimaan-k/MovieGo/issues">Request Feature ✨</a>
 </p>
 
 ---
@@ -580,7 +580,7 @@ Special thanks to these amazing resources:
 ### 👨‍💻 **Deeptimaan K**
 
 [![GitHub](https://img.shields.io/badge/GitHub-deeptimaan--k-181717?style=for-the-badge&logo=github)](https://github.com/deeptimaan-k)
-[![Project](https://img.shields.io/badge/Project-BookMyRadiant-FF6B6B?style=for-the-badge&logo=github)](https://github.com/deeptimaan-k/BookMyRadiant)
+[![Project](https://img.shields.io/badge/Project-MovieGo-FF6B6B?style=for-the-badge&logo=github)](https://github.com/deeptimaan-k/MovieGo)
 
 </div>
 
@@ -596,8 +596,8 @@ Special thanks to these amazing resources:
 
 ---
 
-![Visitors](https://visitor-badge.laobi.icu/badge?page_id=deeptimaan-k.BookMyRadiant)
-![GitHub stars](https://img.shields.io/github/stars/deeptimaan-k/BookMyRadiant?style=social)
-![GitHub forks](https://img.shields.io/github/forks/deeptimaan-k/BookMyRadiant?style=social)
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=deeptimaan-k.MovieGo)
+![GitHub stars](https://img.shields.io/github/stars/deeptimaan-k/MovieGo?style=social)
+![GitHub forks](https://img.shields.io/github/forks/deeptimaan-k/MovieGo?style=social)
 
 </div>
