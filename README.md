@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎬✨ BookMyRadiant
+# 🎬✨ MovieGo
 
 ### *Your Gateway to Cinematic Excellence*
 
